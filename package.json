@@ -1,0 +1,18 @@
+{
+  "name": "k-culture-masters",
+  "version": "1.0.0",
+  "description": "6학년 영어 11단원 스플렌더 게임 K-Culture Masters",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "express": "^4.22.3",
+    "socket.io": "^4.8.4"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

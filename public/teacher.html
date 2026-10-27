@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>K-Culture 마스터 교사용 관리 화면</title>
+<link rel="stylesheet" href="fonts.css">
+<link rel="stylesheet" href="teacher.css">
+</head>
+<body>
+<header class="hdr">
+  <img src="img/t/logo.webp" class="logo" alt="K-Culture 마스터">
+  <div class="plaque" id="plaque">교사용 관리 화면</div>
+  <nav class="topBtns" id="topBtns">
+    <button class="tb blue" data-v="auto">👥 학생 자동 배정</button>
+    <button class="tb blue2" data-v="manual">✋ 수동 배정</button>
+    <button class="tb green" data-c="startAll">▶ 전체 게임 시작</button>
+    <button class="tb orange" data-c="pause" id="tbPause">⏸ 일시 정지</button>
+    <button class="tb red" data-c="endAll">■ 전체 종료</button>
+    <button class="tb navy sqb" data-open="settings" title="설정">⚙</button>
+  </nav>
+</header>
+
+<section id="vStart" class="startBox">
+  <div class="pnl wide">
+    <div class="ph">수업 만들기</div>
+    <div class="pb center">
+      <img src="img/t/kids.webp" class="kids" alt="">
+      <p>새 수업을 만들면 학생들이 들어올 <b>방 코드 4자리</b>가 생겨요.</p>
+      <button class="tb green big" id="bCreate">＋ 새 수업 만들기</button>
+      <button class="tb gray" id="bResume" style="display:none">이전 수업 이어서 열기</button>
+      <p class="err" id="startErr"></p>
+    </div>
+  </div>
+</section>
+
+<div id="vApp" style="display:none">
+  <div class="tabsTop" id="tabsTop">
+    <button data-v="dash" class="on">🏠 전체 관리</button>
+    <button data-v="auto">👥 자동 배정</button>
+    <button data-v="manual">✋ 수동 배정</button>
+    <button data-v="monitor">🔍 방별 모니터링</button>
+    <button data-v="questions">📝 영어 문제 관리</button>
+    <button data-v="results">🏆 결과 보기</button>
+    <span class="codeTag">방 코드 <b id="sCode">----</b><button class="mini" id="bQR">QR 보기</button></span>
+  </div>
+  <div class="stats" id="stats"></div>
+
+  <!-- 전체 관리 -->
+  <section class="view on" id="v-dash">
+    <div class="dashTop">
+      <div class="pnl studPnl"><div class="ph">👥 전체 학생 목록 <span id="dCount"></span></div>
+        <div class="pb"><input class="search" id="dSearch" placeholder="🔍 학생 이름 검색…">
+          <div class="tblWrap"><table class="tbl"><thead><tr><th><input type="checkbox" id="dAll"></th><th>번호</th><th>이름</th><th>접속 상태</th><th>배정 방</th></tr></thead><tbody id="dStud"></tbody></table></div>
+          <div class="rowb"><select id="dMoveTo"></select><button class="tb blue sm" id="dMove">선택 학생 이동</button><button class="tb gray sm" id="dClear">선택 해제</button></div>
+        </div></div>
+      <div class="roomGrid" id="dRooms"></div>
+    </div>
+    <div class="dashBot">
+      <div class="pnl"><div class="ph">🎲 게임 진행 상황</div><div class="pb" id="dProg"></div></div>
+      <div class="pnl"><div class="ph">📊 실시간 점수 현황</div><div class="pb"><div class="mtabs" id="dRankTabs"><button class="on" data-s="score">점수순</button><button data-s="tok">획득 자원순</button><button data-s="cards">카드 수순</button></div><div id="dRank"></div></div></div>
+      <div class="pnl"><div class="ph">🔎 선택 방 상세 정보</div><div class="pb" id="dSel"></div></div>
+      <div class="pnl"><div class="ph">⚡ 빠른 기능</div><div class="pb quick">
+        <button class="qb blue" data-v="auto">👥<span>학생 자동 배정</span></button>
+        <button class="qb pink" data-c="newKeep">🔄<span>같은 팀 새 게임</span></button>
+        <button class="qb orange" data-c="newMix">🏠<span>팀 풀고 대기실로</span></button>
+        <button class="qb purple" data-open="settings">⚙<span>게임 설정</span></button>
+        <button class="qb sky" data-c="extend">⏱<span>시간 +5분</span></button>
+        <button class="qb green" data-v="questions">📝<span>문제 관리</span></button>
+        <button class="qb gray" data-c="startAll">▶<span>모든 방 일괄 시작</span></button>
+        <button class="qb gray" data-c="pause">⏸<span>모든 방 일괄 정지</span></button>
+        <button class="qb gray" data-c="endAll">■<span>모든 방 일괄 종료</span></button>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- 자동 배정 -->
+  <section class="view" id="v-auto">
+    <div class="steps3" id="aSteps"><span class="on"><b>1</b>학생 선택</span>➜<span><b>2</b>배정 방식</span>➜<span><b>3</b>배정 결과</span></div>
+    <div class="autoWrap">
+      <div class="leftCol">
+        <div class="pnl"><div class="ph">👥 접속 학생 목록 <span id="aCount"></span></div><div class="pb">
+          <input class="search" id="aSearch" placeholder="🔍 학생 이름 검색…">
+          <div class="tblWrap tall"><table class="tbl"><thead><tr><th><input type="checkbox" id="aAll" checked></th><th>번호</th><th>이름</th><th>접속 상태</th></tr></thead><tbody id="aStud"></tbody></table></div>
+          <div class="rowb"><button class="tb blue sm" id="aSelAll">전체 선택</button><button class="tb gray sm" id="aSelNone">선택 해제</button></div>
+        </div></div>
+        <div class="pnl"><div class="ph">⚙ 배정 옵션</div><div class="pb opts">
+          <label><input type="checkbox" id="aOnline" checked> 접속한 학생만 배정하기 <span id="aOnN"></span></label>
+          <label><input type="checkbox" id="aReset" checked> 기존 배정 초기화하기</label>
+          <label class="sel">방 인원수 <select id="aSize"><option value="3">3명</option><option value="4">4명</option><option value="5" selected>5명 (권장)</option></select></label>
+          <label><input type="checkbox" id="aMix" checked> 바로 전 게임과 같은 팀이 되지 않게 섞기</label>
+        </div></div>
+      </div>
+      <div class="rightCol">
+        <div class="roomGrid preview" id="aRooms"></div>
+        <div class="autoBtns">
+          <button class="tb blue huge" id="aRun">🔀 자동 배정하기</button>
+          <button class="tb green huge" id="aApply" disabled>▶ 배정 결과 적용</button>
+          <button class="tb gray huge" id="aAgain" disabled>↻ 다시 배정하기</button>
+          <div class="speech" id="aSay">학생을 선택하고 자동 배정하기를 눌러 주세요!</div>
+          <img src="img/v2/chn_seoyeon.webp" class="guide" alt="">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 수동 배정 -->
+  <section class="view" id="v-manual">
+    <div class="manWrap">
+      <div class="pnl leftCol"><div class="ph">👥 접속 학생 목록 <span id="mCount"></span></div><div class="pb">
+        <input class="search" id="mSearch" placeholder="🔍 학생 이름 검색…">
+        <div class="tblWrap tall2"><table class="tbl"><thead><tr><th></th><th>번호</th><th>이름</th><th>접속 상태</th><th>현재 방</th></tr></thead><tbody id="mStud"></tbody></table></div>
+      </div></div>
+      <div class="rightCol">
+        <div class="pnl"><div class="ph">➡ 선택한 학생 이동하기</div><div class="pb moveBox">
+          <div class="selStud" id="mSel"><p class="muted">왼쪽 목록이나 방 카드에서 학생을 눌러 주세요.</p></div>
+          <div class="arrow">➜</div>
+          <div class="roomPick"><div class="cap">이동할 방 선택</div><div class="rpGrid" id="mPick"></div></div>
+          <button class="tb pinkBig" id="mGo">➜ 선택한 학생<br>이동하기</button>
+        </div></div>
+        <div class="roomGrid manual" id="mRooms"></div>
+      </div>
+    </div>
+    <div class="manBot">
+      <div class="pnl"><div class="ph">⚙ 학생 이동 기록</div><div class="pb"><table class="tbl small"><thead><tr><th>시간</th><th>학생 이름</th><th>이동 내역</th></tr></thead><tbody id="mLog"></tbody></table></div></div>
+      <div class="pnl"><div class="ph">📊 방 인원 현황</div><div class="pb capGrid" id="mCap"></div></div>
+      <div class="pnl"><div class="ph">💡 도움말</div><div class="pb help"><ul><li>학생을 선택한 뒤 이동할 방을 누르고 이동하기를 눌러요.</li><li>한 방은 최대 5명까지 배정할 수 있어요.</li><li>게임 중인 방의 학생은 옮길 수 없어요.</li><li>방 이름 변경으로 방 이름을 바꿀 수 있어요.</li></ul></div></div>
+      <div class="pnl warnP"><div class="ph red">⚠ 주의사항</div><div class="pb help"><ul><li>게임 진행 중에는 학생 이동이 제한돼요.</li><li>이동은 누르는 즉시 학생 화면에 반영돼요.</li></ul></div></div>
+    </div>
+  </section>
+
+  <!-- 방별 모니터링 -->
+  <section class="view" id="v-monitor">
+    <div class="monWrap">
+      <div class="pnl roomList"><div class="ph">🌸 전체 방 현황 <span id="rlCount"></span></div><div class="pb" id="monList"></div></div>
+      <div class="monMain" id="monMain"></div>
+      <div class="monSide">
+        <div class="pnl"><div class="ph">현재 차례</div><div class="pb" id="monTurn"></div></div>
+        <div class="pnl"><div class="ph">방 조작</div><div class="pb roomOps" id="monOps"></div></div>
+      </div>
+    </div>
+    <div class="monBot">
+      <div class="pnl"><div class="ph">🌸 실시간 게임 진행 상황</div><div class="pb"><div class="tblWrap mid"><table class="tbl small"><thead><tr><th>시간</th><th>방 번호</th><th>내용</th></tr></thead><tbody id="monLog"></tbody></table></div></div></div>
+      <div class="pnl"><div class="ph">📊 방별 점수 현황</div><div class="pb" id="monBars"></div></div>
+      <div class="pnl"><div class="ph" id="monStudHead">학생별 상세 정보</div><div class="pb" id="monStud"></div></div>
+    </div>
+  </section>
+
+  <!-- 영어 문제 관리 -->
+  <section class="view" id="v-questions">
+    <div class="qBar">
+      <div class="pnl"><div class="ph">📖 자원 종류 선택</div><div class="pb"><select id="qCatSel"></select></div></div>
+      <div class="pnl grow"><div class="ph">🧩 문제 유형 필터</div><div class="pb" id="qKinds"></div></div>
+      <div class="pnl"><div class="ph">📊 문제 통계</div><div class="pb qStat" id="qStat"></div></div>
+    </div>
+    <div class="qWrap">
+      <div class="pnl qList"><div class="ph">📝 문제 목록 <span id="qCount"></span></div><div class="pb">
+        <input class="search" id="qSearch" placeholder="🔍 문제 내용 검색…">
+        <div class="tblWrap qt"><table class="tbl"><thead><tr><th><input type="checkbox" id="qAll"></th><th>번호</th><th>유형</th><th>자원</th><th>문제 내용 (미리보기)</th></tr></thead><tbody id="qBody"></tbody></table></div>
+        <div class="pager" id="qPager"></div>
+        <div class="rowb"><button class="tb blue sm" id="qNew">＋ 문제 추가</button><button class="tb purple sm" id="qOn">선택 사용</button><button class="tb gray sm" id="qOff">선택 끄기</button><button class="tb red sm" id="qDel">🗑 선택 삭제</button></div>
+      </div></div>
+      <div class="pnl qDetail"><div class="ph">⚙ 문제 상세 보기 <span class="phR"><button class="mini" id="qPrev">◀ 이전 문제</button><button class="mini blue" id="qNext">다음 문제 ▶</button></span></div><div class="pb" id="qEdit"></div></div>
+      <div class="qSideCol">
+        <div class="pnl"><div class="ph">📥 엑셀 업로드</div><div class="pb upl">
+          <div class="steps4" id="uSteps"><span class="on"><b>1</b>파일 선택</span><span><b>2</b>형식 확인</span><span><b>3</b>업로드</span><span><b>4</b>결과 확인</span></div>
+          <label class="drop" id="drop"><div class="xl">X</div>엑셀 파일을 끌어 놓거나 클릭하세요.<small>(xlsx, xls, csv 파일)</small><span class="tb green sm">파일 선택하기</span><input type="file" id="qFile" accept=".xlsx,.xls,.csv" hidden></label>
+          <button class="tb sky sm wide" id="qTpl">⬇ 엑셀 양식 다운로드</button>
+          <button class="tb gray sm wide" id="qExport">⬇ 지금 문제 엑셀로 내보내기</button>
+        </div></div>
+        <div class="pnl"><div class="ph">📊 업로드 결과</div><div class="pb" id="uRes"><div class="resRow"><div class="rbox ok">✅ 성공<b>0개</b></div><div class="rbox bad">❌ 실패<b>0개</b></div><div class="rbox dup">🔁 중복<b>0개</b></div></div><p class="muted">엑셀 파일을 올리면 결과가 여기에 보여요.</p></div></div>
+      </div>
+    </div>
+    <div class="qBot">
+      <div class="pnl"><div class="ph">🖼 문제 미리보기 (사진/그림 문제)</div><div class="pb"><div class="strip" id="qStrip"></div></div></div>
+      <div class="pnl"><div class="ph">📊 문제 유형별 통계</div><div class="pb" id="qTypeStat"></div></div>
+      <div class="pnl"><div class="ph">📊 자원 종류별 통계</div><div class="pb" id="qCatStat"></div></div>
+    </div>
+  </section>
+
+  <!-- 결과 -->
+  <section class="view" id="v-results">
+    <div class="pnl"><div class="ph">🏆 학생별 누적 결과 <span class="phR"><button class="mini green" id="rXlsx">⬇ 엑셀 저장</button><button class="mini" id="rClear">기록 지우기</button></span></div><div class="pb" id="rTotal"></div></div>
+    <div id="rGames"></div>
+  </section>
+</div>
+
+<!-- 팝업 -->
+<div class="layer" id="pSettings"><div class="pnl popW"><div class="ph">⚙ 게임 설정<button class="x" data-close>✕</button></div><div class="pb setGrid">
+  <label>제한 시간 <select id="stTime"><option>5</option><option>8</option><option>10</option><option>12</option><option>15</option><option>20</option><option>25</option><option>30</option></select> 분</label>
+  <label>목표 점수 <select id="stTarget"><option>8</option><option>10</option><option>12</option><option>15</option><option>18</option><option>20</option></select> 점</label>
+  <label>한 차례 시간 <select id="stTurn"><option>30</option><option>45</option><option>60</option><option>90</option><option>120</option></select> 초</label>
+  <label>문제 푸는 시간 <select id="stQ"><option>15</option><option>20</option><option>25</option><option>30</option><option>45</option></select> 초</label>
+  <label>힌트 (한 판에) <select id="stHints"><option>0</option><option>1</option><option>2</option><option>3</option></select> 번</label>
+  <label>방 인원 수 <select id="stSize"><option>2</option><option>3</option><option>4</option><option>5</option></select> 명</label>
+  <label class="chk"><input type="checkbox" id="stRooms"> 학생이 방을 만들고 들어갈 수 있게 하기</label>
+  <label class="chk"><input type="checkbox" id="stHost"> 학생 방장이 스스로 게임을 시작할 수 있게 하기</label>
+  <p class="muted">설정은 다음에 시작하는 게임부터 적용돼요.</p>
+</div></div></div>
+<div class="layer" id="pConfirm"><div class="pnl popS"><div class="ph">안내 팝업</div><div class="pb center"><img src="img/v2/chn_jiho.webp" class="popCh l" alt=""><img src="img/v2/chn_seoyeon.webp" class="popCh r" alt=""><p id="cfMsg"></p><div class="rowb c"><button class="tb gray" id="cfNo">취소</button><button class="tb green" id="cfYes">확인</button></div></div></div></div>
+<div class="layer" id="pRename"><div class="pnl popS"><div class="ph">방 이름 변경</div><div class="pb center"><input class="search" id="rnIn" maxlength="14"><div class="rowb c"><button class="tb gray" data-close>취소</button><button class="tb blue" id="rnOk">저장</button></div></div></div></div>
+<div class="layer" id="pQR"><div class="pnl popS"><div class="ph">학생 입장 안내<button class="x" data-close>✕</button></div><div class="pb center"><div class="bigCode" id="qrCode"></div><div id="qr"></div><p id="qrUrl"></p></div></div></div>
+<div class="toast" id="toast"></div>
+
+<script src="lib/qrcode.min.js"></script>
+<script src="lib/xlsx.full.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="shared.js"></script>
+<script src="teacher.js"></script>
+</body>
+</html>
