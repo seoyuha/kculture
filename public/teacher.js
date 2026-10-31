@@ -26,7 +26,8 @@
     $('qrCode').textContent = r.code; $('qrUrl').textContent = location.origin + '/';
     $('qr').innerHTML = ''; try { new QRCode($('qr'), { text: `${location.origin}/?code=${r.code}`, width: 200, height: 200 }); } catch { $('qr').textContent = `${location.origin}/?code=${r.code}`; }
   }
-  $('bCreate').onclick = () => socket.emit('t:create', {}, (r) => { if (r.ok) { enter(r); $('pQR').classList.add('on'); } });
+  $('bCreate').onclick = () => socket.emit('t:create', { pass: $('tPass').value }, (r) => { if (r.ok) { $('tPass').value = ''; enter(r); $('pQR').classList.add('on'); } else { $('startErr').textContent = r.err; $('tPass').focus(); } });
+  $('tPass').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('bCreate').click(); });
   $('bResume').onclick = () => socket.emit('t:resume', saved, (r) => { if (r.ok) enter(r); else { $('startErr').textContent = r.err + ' 새 수업을 만들어 주세요.'; $('bResume').style.display = 'none'; } });
   $('bQR').onclick = () => $('pQR').classList.add('on');
   socket.on('connect', () => { if (T) socket.emit('t:resume', JSON.parse(localStorage.getItem(KEY) || 'null'), (r) => { if (!r.ok) toast('수업 정보를 찾을 수 없어요.'); }); });

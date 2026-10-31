@@ -10,6 +10,11 @@ const KC = require('./public/shared.js');
 const DEFAULT_Q = require('./defaultQuestions.js');
 
 const PORT = process.env.PORT || 3000;
+// 교사 비밀번호 (저장소에는 해시만 둬요. Render 환경 변수 TEACHER_PASS로 바꿀 수 있어요)
+const crypto = require('crypto');
+const sha = (t) => crypto.createHash('sha256').update(String(t || '')).digest('hex');
+const PASS_HASH = process.env.TEACHER_PASS ? sha(process.env.TEACHER_PASS) : '0dbbed0d5f19d328ef04d79ff94b7038b900785f7ec3f7f9855d1423e8fb8cb8';
+const passTries = new Map(); // 주소별 틀린 횟수 (막 넣어 보기 막기)
 const app = express();
 app.use(express.static(path.join(__dirname, 'public'), { maxAge: '10m' }));
 app.get('/health', (_, res) => res.send('ok'));
@@ -43,7 +48,7 @@ function cleanQuestion(q) {
 /* ---------------- 상태 ---------------- */
 const classes = new Map(); // code -> cls
 // fast: 수업용 빠른 진행 — 정답이면 고른 자원 ×mult, 자원·예약 뒤에 같은 차례에 카드 1장 더 살 수 있음
-const DEFAULT_SETTINGS = { teamSize: 5, timeLimit: 10, target: 5, turnTime: 60, qTime: 25, allowRooms: true, hostStart: true, hints: 2, fast: true, mult: 2 };
+const DEFAULT_SETTINGS = { teamSize: 5, timeLimit: 10, target: 5, turnTime: 60, qTime: 25, allowRooms: false, hostStart: false, hints: 2, fast: true, mult: 2 };
 const rid = () => Math.random().toString(36).slice(2, 10);
 const now = () => Date.now();
 const shuffle = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = (Math.random() * (i + 1)) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
@@ -386,7 +391,11 @@ io.on('connection', (sock) => {
   const ack = (cb, v) => { if (typeof cb === 'function') cb(v); };
 
   // ===== 교사 =====
-  sock.on('t:create', (_, cb) => {
+  sock.on('t:create', (m = {}, cb) => {
+    const ip = sock.handshake.address; const tr = passTries.get(ip) || { n: 0, t: 0 };
+    if (tr.n >= 5 && now() - tr.t < 60000) return ack(cb, { err: '비밀번호를 여러 번 틀렸어요. 1분 뒤에 다시 해 주세요.' });
+    if (sha(m.pass) !== PASS_HASH) { passTries.set(ip, { n: tr.n + 1, t: now() }); return ack(cb, { err: '교사 비밀번호가 맞지 않아요.' }); }
+    passTries.delete(ip);
     cls = makeClass(); isTeacher = true; sock.join('T:' + cls.code);
     ack(cb, { ok: true, code: cls.code, key: cls.teacherKey }); touch(cls);
   });
