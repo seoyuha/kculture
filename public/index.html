@@ -12,20 +12,16 @@
 <div id="bg"></div>
 <div id="stage" class="land">
 
-  <!-- 1. 시작 화면 (시안 1) -->
+  <!-- 1. 시작 화면 (선생님 시안 그림 그대로) -->
   <section class="scr" id="sTitle">
-    <div class="tGlow"></div>
-    <img src="img/v2/logo.webp" class="tLogo" alt="K-Culture 마스터">
-    <p class="tRibbon">영어 문제를 맞히고 한국 전통문화 카드를 모아요!</p>
-    <div class="tBtns">
-      <button class="ib tStart" data-go="join"><img src="img/v2/b_start.webp" alt="게임 시작하기"></button>
-      <div class="rowc">
-        <button class="ib" data-open="rules"><img src="img/v2/btn_rules.webp" alt="게임 설명"></button>
-        <button class="ib" data-open="gear"><img src="img/v2/btn_settings.webp" alt="설정"></button>
-      </div>
+    <div class="tArt">
+      <img src="img/n/title.webp" alt="K-Culture Masters 시작 화면">
+      <button class="hot" style="left:32.3%;top:67%;width:35.6%;height:14.3%" data-go="join" aria-label="게임 시작"></button>
+      <button class="hot" style="left:18.7%;top:84%;width:15%;height:10%" data-open="rules" aria-label="게임 방법"></button>
+      <button class="hot" style="left:34.5%;top:84%;width:15.2%;height:10%" id="tPrac" aria-label="연습하기"></button>
+      <button class="hot" style="left:50.4%;top:84%;width:15.2%;height:10%" id="tRank" aria-label="랭킹 보기"></button>
+      <button class="hot" style="left:66.3%;top:84%;width:15.2%;height:10%" data-open="gear" aria-label="설정"></button>
     </div>
-    <div class="tChars"><img src="img/v2/chn_jiho.webp" alt="지호"><img src="img/v2/chn_minseo.webp" alt="민서"><img src="img/v2/chn_dohyeon.webp" alt="도현"><img src="img/v2/chn_seoyeon.webp" alt="서연"><img src="img/v2/chn_junho.webp" alt="준호"></div>
-    <p class="tUnit">6학년 영어 11단원 · Do You Know About Songpyeon?</p>
   </section>
 
   <!-- 2. 방 참가 (시안 2) -->
@@ -254,6 +250,20 @@
     <div class="npop bookPop">
       <div class="nHead">전통문화 카드 도감</div><button class="xB" data-close aria-label="닫기">×</button>
       <div class="nBody"><div class="tabs2" id="bookTabs"></div><div class="bookList" id="bookList"></div></div>
+    </div>
+  </div>
+
+  <div class="layer" id="mPrac">
+    <div class="npop pracPop">
+      <div class="nHead">연습하기 · 사진 보고 이름 맞히기 <span id="tpScore">0 / 0</span></div><button class="xB" data-close aria-label="닫기">×</button>
+      <div class="nBody pracBody">
+        <div class="pracImg"><img id="tpImg" alt=""></div>
+        <div class="pracR">
+          <div class="pracQ">Q. What is this?</div>
+          <div class="pracCh" id="tpCh"></div>
+          <div class="pracFoot"><span id="tpMsg"></span><button class="nbtn blue sm" id="tpNext">다음 문제 ▶</button></div>
+        </div>
+      </div>
     </div>
   </div>
 

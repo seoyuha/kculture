@@ -11,7 +11,7 @@ html,body{margin:0;height:100%;overflow:hidden;overflow:clip;background:#0d1d33;
 button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit;padding:0}
 input{font-family:inherit}
 button,.nHead,.h,.lbl{white-space:nowrap}
-#bg{position:fixed;inset:0;background:url(img/n/bg_palace.webp) center top/cover}
+#bg{position:fixed;inset:0;background:url(img/n/bg_title.webp) center/cover}
 #bg::after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(255,250,235,.15),rgba(255,240,215,.1) 55%,rgba(70,45,20,.35)),radial-gradient(ellipse at center,transparent 55%,rgba(40,25,10,.35))}
 #stage{position:absolute;left:50%;top:50%;overflow:hidden;overflow:clip}
 #stage.land{width:1600px;height:900px}
@@ -566,3 +566,15 @@ button,.nHead,.h,.lbl{white-space:nowrap}
 #stage.port .joinPop{width:800px}
 #stage.port .jTabs span:last-child{display:none}
 #stage.port .lbTop .lbLogo{height:96px}
+
+/* 시작 화면: 시안 그림 그대로 + 투명 버튼 */
+#sTitle{display:none;align-items:center;justify-content:center}
+#sTitle.on{display:flex}
+.tArt{position:relative;width:1600px;aspect-ratio:1671/941;box-shadow:0 10px 40px rgba(0,0,0,.4)}
+.tArt>img{width:100%;height:100%;display:block}
+.tArt .hot{position:absolute;border-radius:24px;transition:background .12s,transform .1s}
+.tArt .hot:hover{background:rgba(255,255,255,.12)}
+.tArt .hot:active{background:rgba(0,0,0,.12);transform:scale(.98)}
+#stage.port .tArt{width:900px;border-radius:12px;overflow:hidden}
+.pracPop{width:1000px}
+.pracPop .pracBody{height:460px}

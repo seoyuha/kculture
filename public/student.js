@@ -205,6 +205,27 @@
     SND.play(ok ? 'correct' : 'wrong'); SND.speak(shortName(c));
   });
   $('pracNext').onclick = () => { SND.play('click'); nextPrac(); };
+  // 시작 화면 연습하기 (입장 전에도 가능)
+  let tpQ = null, tpOk = 0, tpN = 0, tpDone = false, tpBag = [];
+  function tpNext() {
+    if (!tpBag.length) tpBag = QUIZ.map((_, i) => i).sort(() => Math.random() - 0.5);
+    tpQ = QUIZ[tpBag.pop()]; tpDone = false;
+    $('tpImg').src = PH(tpQ[0]);
+    $('tpCh').innerHTML = tpQ[1].map((c, i) => `<button data-i="${i}">${'ABCD'[i]}. ${esc(c)}</button>`).join('');
+    $('tpMsg').textContent = '사진을 보고 알맞은 이름을 골라요.'; $('tpMsg').style.color = '#6b5236';
+  }
+  $('tpCh').addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-i]'); if (!b || tpDone) return;
+    tpDone = true; tpN++; const i = +b.dataset.i, ok = i === tpQ[2]; if (ok) tpOk++;
+    $('tpCh').querySelectorAll('button').forEach((x, k) => { x.classList.toggle('right', k === tpQ[2]); x.classList.toggle('wrong', k === i && !ok); });
+    const c = CARDS[tpQ[0]];
+    $('tpMsg').textContent = ok ? `정답! ${c.name} = ${c.ko}` : `아쉬워요! 정답은 ${c.name}`; $('tpMsg').style.color = ok ? '#1a8d52' : '#c8322e';
+    $('tpScore').textContent = `${tpOk} / ${tpN}`;
+    SND.play(ok ? 'correct' : 'wrong'); SND.speak(shortName(c));
+  });
+  $('tpNext').onclick = () => { SND.play('click'); tpNext(); };
+  $('tPrac').onclick = () => { SND.play('click'); if (!tpQ) tpNext(); openL('mPrac'); };
+  $('tRank').onclick = () => { SND.play('click'); toast('랭킹은 게임이 끝나면 게임 결과 화면에서 볼 수 있어요!', 'info', 2600); };
 
   /* ---------- 게임 ---------- */
   let lastGameStart = 0, lastTurnSeq = -1, qKey = null, resultUntil = 0, cardOpen = null, cardMode = null, plOpen = null, mode = null, qSel = -1, doneShownSeq = -1;
