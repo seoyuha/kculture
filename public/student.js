@@ -87,6 +87,7 @@
     if (!r.char || !CHARS.includes(r.char)) { choosing = true; openSelect(); return; }
     local = 'app'; render();
   };
+  ['inName', 'inCode'].forEach((id) => $(id).addEventListener('input', () => ($('joinMsg').textContent = '')));
   ['inName', 'inCode'].forEach((id) => $(id).addEventListener('keydown', (e) => { if (e.key === 'Enter') { if (id === 'inName') $('inCode').focus(); else $('btnJoin').click(); } }));
   $('inCode').addEventListener('input', () => { $('inCode').value = $('inCode').value.replace(/\D/g, '').slice(0, 4); });
 

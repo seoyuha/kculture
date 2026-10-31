@@ -24,21 +24,16 @@
     </div>
   </section>
 
-  <!-- 2. 방 참가 (시안 2) -->
+  <!-- 2. 방 참가 (첫 시안: Join the Adventure!) -->
   <section class="scr" id="sJoin">
-    <div class="npop solo joinPop">
-      <div class="jTabs"><span class="on">방 참가하기</span><span>방 만들기는 입장 후 대기실에서!</span></div>
-      <div class="nBody">
-        <label class="fld">이름을 입력하세요.<input id="inName" maxlength="12" placeholder="예) 지호" autocomplete="off"></label>
-        <label class="fld">방 코드 (선생님이 알려 준 4자리 숫자)<input id="inCode" class="code" maxlength="4" inputmode="numeric" placeholder="1234" autocomplete="off"></label>
-        <div class="msg" id="joinMsg"></div>
-        <div class="rowc">
-          <button class="ib" data-go="title"><img src="img/v2/b_cancel.webp" alt="취소"></button>
-          <button class="ib" id="btnJoin"><img src="img/v2/b_join.webp" alt="방 참가하기"></button>
-        </div>
-      </div>
-      <img src="img/v2/ch_junho.webp" class="jMascot" alt="">
+    <div class="jArt">
+      <img src="img/n/join_art.webp" alt="Join the Adventure!">
+      <input id="inName" class="jIn jName" maxlength="12" placeholder="이름을 입력하세요" autocomplete="off">
+      <input id="inCode" class="jIn jCode code" maxlength="4" inputmode="numeric" placeholder="방 코드 4자리" autocomplete="off">
+      <button class="jGo" id="btnJoin" aria-label="Join Room 방 참가하기"></button>
+      <div class="jMsg msg" id="joinMsg"></div>
     </div>
+    <button class="nbtn gray jBack" data-go="title">◀ 처음으로</button>
   </section>
 
   <!-- 3. 캐릭터 선택 (시안 3) -->

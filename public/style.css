@@ -578,3 +578,20 @@ button,.nHead,.h,.lbl{white-space:nowrap}
 #stage.port .tArt{width:900px;border-radius:12px;overflow:hidden}
 .pracPop{width:1000px}
 .pracPop .pracBody{height:460px}
+
+/* 방 참가: 첫 시안 그림 + 실제 입력칸 */
+#sJoin{display:none;align-items:center;justify-content:center}
+#sJoin.on{display:flex}
+.jArt{position:relative;height:820px;aspect-ratio:896/860;border-radius:18px;overflow:hidden;box-shadow:0 14px 40px rgba(0,0,0,.45);animation:pop .35s}
+.jArt>img{width:100%;height:100%;display:block}
+.jIn{position:absolute;border:0;background:#fff;font-family:var(--fT);font-size:30px;color:#2a1d10;outline:none;padding:0 10px;border-radius:10px}
+.jIn::placeholder{color:#a69580}
+.jName{left:25%;top:35.6%;width:60.5%;height:8.6%}
+.jCode{left:16.2%;top:57.6%;width:37.4%;height:8.6%;text-align:center;letter-spacing:10px;font-family:var(--fN);font-weight:600;font-size:34px}
+.jCode::placeholder{letter-spacing:0;font-family:var(--fT);font-weight:400;font-size:26px}
+.jGo{position:absolute;left:57.4%;top:56.6%;width:29.4%;height:10.8%;border-radius:14px}
+.jGo:active{background:rgba(0,0,0,.15)}
+.jMsg{position:absolute;left:15%;right:15%;top:69.2%;font-size:24px;text-align:center;min-height:0;text-shadow:0 1px 0 #fff}
+.jIn:focus{box-shadow:0 0 0 3px #3d8ff0}
+.jBack{position:absolute;left:24px;top:24px}
+#stage.port .jArt{height:auto;width:860px}
