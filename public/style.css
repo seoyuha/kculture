@@ -272,7 +272,7 @@ button,.nHead,.h,.lbl{white-space:nowrap}
 .layer{position:absolute;inset:0;background:rgba(6,14,28,.6);display:none;align-items:center;justify-content:center;z-index:30}
 .layer.on{display:flex}
 .layer.clear{background:rgba(6,14,28,.25)}
-.fpop{position:relative;width:960px;aspect-ratio:892/563;animation:pop .3s}
+.fpop{position:relative;width:960px;height:606px;animation:pop .3s}
 .fpop .frm{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 14px 30px rgba(0,0,0,.55))}
 .fpop .fx{position:absolute;left:90.5%;top:0;width:8%;height:14%;border-radius:50%}
 .fTitle{position:absolute;left:8.8%;right:8.7%;top:2.7%;height:9.4%;background:var(--fc);color:#fff;display:flex;align-items:center;justify-content:center;font-size:34px;text-shadow:0 2px 0 rgba(0,0,0,.35),0 0 2px rgba(0,0,0,.4);border-radius:6px}
@@ -512,7 +512,7 @@ button,.nHead,.h,.lbl{white-space:nowrap}
 /* ===== 세로 화면 900×1600 ===== */
 #stage.port #opp0{left:10px;top:820px}#stage.port #opp1{left:454px;top:820px}#stage.port #opp2{left:10px;top:1024px}#stage.port #opp3{left:454px;top:1024px}
 #stage.port .bubble{bottom:380px}
-#stage.port .fpop{width:880px}
+#stage.port .fpop{width:880px;height:555px}
 #stage.port .titleBox{width:860px}
 #stage.port .titleCards img{width:120px}
 #stage.port .lbTitleBox{left:0;right:0;top:110px}
@@ -570,21 +570,21 @@ button,.nHead,.h,.lbl{white-space:nowrap}
 /* 시작 화면: 시안 그림 그대로 + 투명 버튼 */
 #sTitle{display:none;align-items:center;justify-content:center}
 #sTitle.on{display:flex}
-.tArt{position:relative;width:1600px;aspect-ratio:1671/941;box-shadow:0 10px 40px rgba(0,0,0,.4)}
-.tArt>img{width:100%;height:100%;display:block}
+.tArt{position:relative;width:1598px;height:900px;box-shadow:0 10px 40px rgba(0,0,0,.4)}
+.tArt>img{position:absolute;inset:0;width:100%;height:100%;display:block}
 .tArt .hot{position:absolute;border-radius:24px;transition:background .12s,transform .1s}
 .tArt .hot:hover{background:rgba(255,255,255,.12)}
 .tArt .hot:active{background:rgba(0,0,0,.12);transform:scale(.98)}
-#stage.port .tArt{width:900px;border-radius:12px;overflow:hidden}
+#stage.port .tArt{width:900px;height:507px;border-radius:12px;overflow:hidden}
 .pracPop{width:1000px}
 .pracPop .pracBody{height:460px}
 
 /* 방 참가: 첫 시안 그림 + 실제 입력칸 */
 #sJoin{display:none;align-items:center;justify-content:center}
 #sJoin.on{display:flex}
-.jArt{position:relative;height:820px;aspect-ratio:896/860;border-radius:18px;overflow:hidden;box-shadow:0 14px 40px rgba(0,0,0,.45);animation:pop .35s}
-.jArt>img{width:100%;height:100%;display:block}
-.jIn{position:absolute;border:0;background:#fff;font-family:var(--fT);font-size:30px;color:#2a1d10;outline:none;padding:0 10px;border-radius:10px}
+.jArt{position:relative;width:854px;height:820px;flex:none;border-radius:18px;overflow:hidden;box-shadow:0 14px 40px rgba(0,0,0,.45);animation:pop .35s}
+.jArt>img{position:absolute;inset:0;width:100%;height:100%;display:block}
+.jIn{position:absolute;box-sizing:border-box;margin:0;-webkit-appearance:none;appearance:none;min-width:0;border:0;background:#fff;font-family:var(--fT);font-size:30px;color:#2a1d10;outline:none;padding:0 10px;border-radius:10px}
 .jIn::placeholder{color:#a69580}
 .jName{left:25%;top:35.6%;width:60.5%;height:8.6%}
 .jCode{left:16.2%;top:57.6%;width:37.4%;height:8.6%;text-align:center;letter-spacing:10px;font-family:var(--fN);font-weight:600;font-size:34px}
@@ -594,4 +594,4 @@ button,.nHead,.h,.lbl{white-space:nowrap}
 .jMsg{position:absolute;left:15%;right:15%;top:69.2%;font-size:24px;text-align:center;min-height:0;text-shadow:0 1px 0 #fff}
 .jIn:focus{box-shadow:0 0 0 3px #3d8ff0}
 .jBack{position:absolute;left:24px;top:24px}
-#stage.port .jArt{height:auto;width:860px}
+#stage.port .jArt{width:860px;height:825px}

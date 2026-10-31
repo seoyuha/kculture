@@ -16,7 +16,8 @@ const sha = (t) => crypto.createHash('sha256').update(String(t || '')).digest('h
 const PASS_HASH = process.env.TEACHER_PASS ? sha(process.env.TEACHER_PASS) : '0dbbed0d5f19d328ef04d79ff94b7038b900785f7ec3f7f9855d1423e8fb8cb8';
 const passTries = new Map(); // 주소별 틀린 횟수 (막 넣어 보기 막기)
 const app = express();
-app.use(express.static(path.join(__dirname, 'public'), { maxAge: '10m' }));
+// html·css·js는 항상 새로 받기 (업데이트하면 바로 반영), 그림·소리는 1일 보관
+app.use(express.static(path.join(__dirname, 'public'), { maxAge: '1d', setHeaders: (res, f) => { if (/\.(html|css|js)$/.test(f)) res.setHeader('Cache-Control', 'no-cache'); } }));
 app.get('/health', (_, res) => res.send('ok'));
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: '*' }, pingInterval: 10000, pingTimeout: 20000 });
