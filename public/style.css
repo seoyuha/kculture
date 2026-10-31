@@ -11,8 +11,8 @@ html,body{margin:0;height:100%;overflow:hidden;overflow:clip;background:#0d1d33;
 button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit;padding:0}
 input{font-family:inherit}
 button,.nHead,.h,.lbl{white-space:nowrap}
-#bg{position:fixed;inset:0;background:url(img/v2/bg.webp) center/cover}
-#bg::after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(255,244,220,.12),rgba(60,40,20,.25))}
+#bg{position:fixed;inset:0;background:url(img/n/bg_palace.webp) center top/cover}
+#bg::after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(255,250,235,.15),rgba(255,240,215,.1) 55%,rgba(70,45,20,.35)),radial-gradient(ellipse at center,transparent 55%,rgba(40,25,10,.35))}
 #stage{position:absolute;left:50%;top:50%;overflow:hidden;overflow:clip}
 #stage.land{width:1600px;height:900px}
 #stage.port{width:900px;height:1600px}
@@ -478,6 +478,37 @@ button,.nHead,.h,.lbl{white-space:nowrap}
 @keyframes glow{50%{box-shadow:0 0 0 4px rgba(255,208,90,.6),0 0 18px rgba(255,208,90,.8)}}
 @keyframes spin{0%{transform:rotateY(0)}100%{transform:rotateY(360deg)}}
 
+/* ===== 시작·참가·선택·대기 화면 (시안 1~4) ===== */
+#sTitle .tGlow{position:absolute;left:-120px;top:40px;width:1080px;height:820px;background:radial-gradient(ellipse at center,rgba(255,248,230,.75),rgba(255,248,230,.35) 45%,transparent 70%)}
+.tLogo{position:absolute;left:120px;top:70px;width:780px;filter:drop-shadow(0 10px 14px rgba(0,0,0,.45));animation:pop .6s}
+.tRibbon{position:absolute;left:150px;top:395px;width:720px;margin:0;text-align:center;font-size:30px;color:#fff7e0;background:linear-gradient(#b8343a,#8a1f24);border:4px solid #f3c96b;border-radius:40px;padding:10px 20px;text-shadow:0 2px 0 rgba(0,0,0,.35);box-shadow:0 6px 14px rgba(0,0,0,.35)}
+.tBtns{position:absolute;left:150px;top:500px;width:720px;display:flex;flex-direction:column;align-items:center;gap:6px}
+.tBtns .tStart img{height:118px;animation:bob 1.6s infinite}
+.tBtns .rowc img{height:76px}
+.tChars{position:absolute;right:40px;bottom:70px;display:flex;align-items:flex-end;gap:2px;padding:20px 26px 14px;background:linear-gradient(rgba(255,250,236,.92),rgba(246,230,196,.92));border:5px solid #d9a64b;border-radius:30px;box-shadow:0 0 0 3px #6b4214,0 12px 30px rgba(0,0,0,.4)}
+.tChars img{height:230px;filter:drop-shadow(0 6px 6px rgba(0,0,0,.3));transition:transform .2s}
+.tChars img:hover{transform:translateY(-10px)}
+.tChars img:nth-child(odd){animation:sway 3s ease-in-out infinite}
+.tUnit{position:absolute;left:0;right:0;bottom:16px;margin:0;text-align:center;font-family:var(--fN);font-size:22px;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,.7)}
+@keyframes sway{50%{transform:translateY(-6px)}}
+@keyframes bob{50%{transform:translateY(-5px)}}
+.joinPop{width:720px}
+.jTabs{display:flex;gap:6px;padding:10px 14px 0;background:linear-gradient(#1f416c,#132c4c);border-radius:15px 15px 0 0;border-bottom:3px solid var(--gold)}
+.jTabs span{padding:10px 26px;border-radius:12px 12px 0 0;font-size:24px;color:#d9cdb4;background:rgba(255,255,255,.08);white-space:nowrap}
+.jTabs span:last-child{font-size:17px;align-self:center;background:none;padding:8px 6px}
+.jTabs span.on{background:var(--cream);color:#132c4c}
+.jMascot{position:absolute;right:-210px;bottom:-30px;height:330px;filter:drop-shadow(0 8px 10px rgba(0,0,0,.4));animation:sway 3s ease-in-out infinite}
+.joinPop .ib img,.selPop .ib img{height:64px}
+.selPop{width:1120px}
+.selRow button{width:200px;background:linear-gradient(#fffaf0,#f3e3c0);border:4px solid #e6c88a}
+.selRow button.on{border-color:#e0a51e;background:linear-gradient(#fff6d6,#ffe39a);box-shadow:0 0 0 4px rgba(224,165,30,.4),0 10px 18px rgba(0,0,0,.25)}
+.selName{text-align:center;font-size:24px;margin:14px 0 0;color:#6b5236}
+.selName b{display:inline-block;min-width:200px;margin-left:10px;padding:6px 18px;background:#fff;border:3px solid #d6b77a;border-radius:12px;color:#132c4c;font-weight:400}
+.lbTop .lbLogo{position:absolute;left:0;top:-6px;height:104px;filter:drop-shadow(0 4px 4px rgba(0,0,0,.35))}
+.mem .rdy{display:inline-block;margin-top:4px;font-style:normal;font-size:15px;color:#fff;background:linear-gradient(#45c95a,#17883a);border-radius:8px;padding:1px 10px}
+.mem.off .rdy{background:#9a9a9a}
+.waitBar{display:inline-block;padding:12px 40px;border-radius:14px;background:linear-gradient(#c9c9c9,#9a9a9a);color:#fff;font-size:24px;border:3px solid rgba(0,0,0,.2);text-shadow:0 1px 0 rgba(0,0,0,.3)}
+.lbBody .ib img{height:62px}
 /* ===== 세로 화면 900×1600 ===== */
 #stage.port #opp0{left:10px;top:820px}#stage.port #opp1{left:454px;top:820px}#stage.port #opp2{left:10px;top:1024px}#stage.port #opp3{left:454px;top:1024px}
 #stage.port .bubble{bottom:380px}
@@ -524,3 +555,14 @@ button,.nHead,.h,.lbl{white-space:nowrap}
 #stage.port .tierHead{font-size:18px}
 #stage.port .mc .nm{font-size:13px}
 #stage.port .gIcons .ic.exit img{height:50px}
+
+#stage.port .tGlow{left:-90px;top:20px;width:1080px;height:900px}
+#stage.port .tLogo{left:80px;top:90px;width:740px}
+#stage.port .tRibbon{left:60px;top:410px;width:780px;font-size:28px}
+#stage.port .tBtns{left:90px;top:520px}
+#stage.port .tChars{left:30px;right:30px;bottom:110px;justify-content:center}
+#stage.port .tChars img{height:200px}
+#stage.port .jMascot{display:none}
+#stage.port .joinPop{width:800px}
+#stage.port .jTabs span:last-child{display:none}
+#stage.port .lbTop .lbLogo{height:96px}

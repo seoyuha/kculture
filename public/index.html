@@ -12,45 +12,49 @@
 <div id="bg"></div>
 <div id="stage" class="land">
 
-  <!-- 1. 시작 화면 -->
+  <!-- 1. 시작 화면 (시안 1) -->
   <section class="scr" id="sTitle">
-    <div class="titleBox">
-      <div class="logoTxt big"><b>K-Culture</b><span>마스터</span></div>
-      <p class="tagline">영어 문제를 맞히고 한국 전통문화 카드를 모아요!</p>
-      <div class="titleCards" id="titleCards"></div>
-      <button class="ib big" data-go="join"><img src="img/n/btn/start_n.webp" alt="게임 시작"></button>
+    <div class="tGlow"></div>
+    <img src="img/v2/logo.webp" class="tLogo" alt="K-Culture 마스터">
+    <p class="tRibbon">영어 문제를 맞히고 한국 전통문화 카드를 모아요!</p>
+    <div class="tBtns">
+      <button class="ib tStart" data-go="join"><img src="img/v2/b_start.webp" alt="게임 시작하기"></button>
       <div class="rowc">
-        <button class="nbtn sky" data-open="rules">📖 게임 방법</button>
-        <button class="nbtn gray" data-open="gear">⚙ 설정</button>
+        <button class="ib" data-open="rules"><img src="img/v2/btn_rules.webp" alt="게임 설명"></button>
+        <button class="ib" data-open="gear"><img src="img/v2/btn_settings.webp" alt="설정"></button>
       </div>
     </div>
+    <div class="tChars"><img src="img/v2/chn_jiho.webp" alt="지호"><img src="img/v2/chn_minseo.webp" alt="민서"><img src="img/v2/chn_dohyeon.webp" alt="도현"><img src="img/v2/chn_seoyeon.webp" alt="서연"><img src="img/v2/chn_junho.webp" alt="준호"></div>
+    <p class="tUnit">6학년 영어 11단원 · Do You Know About Songpyeon?</p>
   </section>
 
-  <!-- 2. 방 참가 -->
+  <!-- 2. 방 참가 (시안 2) -->
   <section class="scr" id="sJoin">
     <div class="npop solo joinPop">
-      <div class="nHead">방 참가하기</div>
+      <div class="jTabs"><span class="on">방 참가하기</span><span>방 만들기는 입장 후 대기실에서!</span></div>
       <div class="nBody">
         <label class="fld">이름을 입력하세요.<input id="inName" maxlength="12" placeholder="예) 지호" autocomplete="off"></label>
-        <label class="fld">방 코드 (4자리 숫자)<input id="inCode" class="code" maxlength="4" inputmode="numeric" placeholder="1234" autocomplete="off"></label>
+        <label class="fld">방 코드 (선생님이 알려 준 4자리 숫자)<input id="inCode" class="code" maxlength="4" inputmode="numeric" placeholder="1234" autocomplete="off"></label>
         <div class="msg" id="joinMsg"></div>
         <div class="rowc">
-          <button class="ib" data-go="title"><img src="img/n/btn/cancel_n.webp" alt="취소"></button>
-          <button class="ib" id="btnJoin"><img src="img/n/btn/join_n.webp" alt="방 참가하기"></button>
+          <button class="ib" data-go="title"><img src="img/v2/b_cancel.webp" alt="취소"></button>
+          <button class="ib" id="btnJoin"><img src="img/v2/b_join.webp" alt="방 참가하기"></button>
         </div>
       </div>
+      <img src="img/v2/ch_junho.webp" class="jMascot" alt="">
     </div>
   </section>
 
-  <!-- 3. 캐릭터 선택 -->
+  <!-- 3. 캐릭터 선택 (시안 3) -->
   <section class="scr" id="sSelect">
     <div class="npop solo selPop">
       <div class="nHead">캐릭터를 골라요!</div>
       <div class="nBody">
         <div class="selRow" id="selRow"></div>
+        <div class="selName">닉네임 <b id="selNick">-</b></div>
         <div class="rowc">
-          <button class="ib" id="selBack"><img src="img/n/btn/cancel_n.webp" alt="취소"></button>
-          <button class="ib" id="btnSelect"><img src="img/n/btn/ok_n.webp" alt="확인"></button>
+          <button class="ib" id="selBack"><img src="img/v2/b_cancel.webp" alt="취소"></button>
+          <button class="ib" id="btnSelect"><img src="img/v2/b_ok.webp" alt="확인"></button>
         </div>
       </div>
     </div>
@@ -59,7 +63,7 @@
   <!-- 4. 대기실 -->
   <section class="scr" id="sLobby">
     <div class="lbTop">
-      <div class="logoTxt"><b>K-Culture</b><span>마스터 | 학생용</span></div>
+      <img src="img/v2/logo.webp" class="lbLogo" alt="K-Culture 마스터">
       <div class="hBox lbTitleBox"><b id="lbTitle">대기 중입니다</b><small id="lbSub">선생님의 팀 배정을 기다려요</small></div>
       <div class="hBox lbMe"><img id="lbAv" class="ava"><div><b id="lbName">-</b><small>방 코드 <span id="lbCode">-</span></small></div>
         <button class="nbtn sky sm" id="btnChar">캐릭터 바꾸기</button></div>

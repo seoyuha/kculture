@@ -43,7 +43,6 @@
   let prevRoomId = null, prevPaused = false, pauseHidden = false;
   const socket = io({ transports: ['websocket', 'polling'] });
 
-  $('titleCards').innerHTML = ['songpyeon', 'hanbok', 'yutnori', 'celadon', 'gyeongbokgung'].map((id) => `<img src="${CARDIMG(id)}" alt="${CARDS[id].name}">`).join('');
 
   function show(id) { document.querySelectorAll('.scr').forEach((e) => e.classList.toggle('on', e.id === id)); }
   function toast(msg, kind = '', ms = 2200) { const t = $('toast'); t.textContent = msg; t.className = 'bubble on ' + kind; clearTimeout(t._h); t._h = setTimeout(() => (t.className = 'bubble'), ms); }
@@ -93,7 +92,7 @@
 
   $('selRow').innerHTML = CHARS.map((c) => `<button data-c="${c}"><img src="${AVN(c)}" alt="${CHAR_KO[c]}"></button>`).join('');
   function markChar() { $('selRow').querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.c === selChar)); }
-  function openSelect() { local = 'select'; show('sSelect'); markChar(); $('selBack').style.display = S && S.me && CHARS.includes(S.me.char) ? '' : 'none'; }
+  function openSelect() { local = 'select'; show('sSelect'); markChar(); $('selNick').textContent = (S && S.me && S.me.name) || (sess && sess.name) || $('inName').value || '-'; $('selBack').style.display = S && S.me && CHARS.includes(S.me.char) ? '' : 'none'; }
   $('selRow').addEventListener('click', (e) => { const b = e.target.closest('button[data-c]'); if (b) { selChar = b.dataset.c; SND.play('pick'); markChar(); } });
   $('btnSelect').onclick = () => {
     SND.play('press'); if (!joined) return nav('join');
@@ -150,25 +149,25 @@
       $('lbSub').textContent = `${room.players.length} / ${room.max || 5}명 · ${room.by === 'student' ? '친구가 만든 방' : '선생님이 배정한 방'}`;
       $('lbHead').textContent = room.by === 'student' ? '친구가 만든 방이에요' : '선생님이 배정한 방이에요';
       const max = Math.min(room.max || 5, Math.max(set.teamSize, room.players.length));
-      h += `<div class="team">${room.players.map((p) => `<div class="mem ${p.online ? '' : 'off'} ${p.id === me.id ? 'me' : ''}">${room.hostId === p.id ? '<span class="host">방장</span>' : ''}<img src="${AV(p.char)}"><b>${esc(p.name)}</b></div>`).join('')}
+      h += `<div class="team">${room.players.map((p) => `<div class="mem ${p.online ? '' : 'off'} ${p.id === me.id ? 'me' : ''}">${room.hostId === p.id ? '<span class="host">방장</span>' : ''}<img src="${AV(p.char)}"><b>${esc(p.name)}</b><i class="rdy">${p.online ? '준비완료' : '접속 끊김'}</i></div>`).join('')}
         ${Array.from({ length: Math.max(0, (room.by === 'student' ? room.max : max) - room.players.length) }, () => '<div class="mem empty">빈 자리</div>').join('')}</div>`;
       const canStart = set.hostStart && room.hostId === me.id;
-      h += `<p style="text-align:center;font-size:23px;margin:14px 0 4px">${canStart ? (room.players.length >= 2 ? '친구들이 다 모이면 게임 시작을 눌러요!' : '친구가 더 들어오면 시작할 수 있어요.') : '선생님이나 방장이 시작하면 게임이 열려요!'}</p>`;
-      h += `<div class="rowc">${set.allowRooms ? '<button class="nbtn gray" id="lbLeave">방 나가기</button>' : ''}${canStart ? `<button class="ib" id="lbStart" ${room.players.length < 2 ? 'disabled' : ''}><img src="${BTN('start', room.players.length < 2 ? 'd' : 'n')}" alt="게임 시작"></button>` : ''}</div>`;
+      h += `<p style="text-align:center;font-size:23px;margin:14px 0 4px">${canStart ? (room.players.length >= 2 ? '친구들이 다 모이면 게임 시작을 눌러요!' : '친구가 더 들어오면 시작할 수 있어요.') : '모든 학생이 준비되면 게임이 시작됩니다. (선생님이나 방장이 시작해요)'}</p>`;
+      h += `<div class="rowc">${set.allowRooms ? '<button class="nbtn gray" id="lbLeave">방 나가기</button>' : ''}${canStart ? `<button class="ib" id="lbStart" ${room.players.length < 2 ? 'disabled' : ''}><img src="img/v2/b_start${room.players.length < 2 ? '_d' : ''}.webp" alt="게임 시작하기"></button>` : '<span class="waitBar">게임 시작 대기 중…</span>'}</div>`;
     } else {
       $('lbTitle').textContent = '대기 중입니다';
       $('lbSub').textContent = '선생님의 팀 배정을 기다려요';
       $('lbHead').textContent = '팀 배정을 기다려요';
-      h += `<div class="waitBox"><img src="img/n/ui/reconnect.webp" alt=""><p>선생님이 팀을 배정하고 있어요.<small>또는 친구들과 직접 방을 만들어 들어갈 수 있어요.</small></p>
-        ${set.allowRooms ? `<button class="ib" id="lbCreate"><img src="${BTN('create', 'n')}" alt="방 만들기"></button>` : ''}</div>`;
+      h += `<div class="waitBox"><img src="img/v2/pop_wait.webp" alt=""><p>선생님이 팀을 배정하고 있어요.<small>또는 친구들과 직접 방을 만들어 들어갈 수 있어요.</small></p>
+        ${set.allowRooms ? `<button class="ib" id="lbCreate"><img src="img/v2/b_create.webp" alt="방 만들기"></button>` : ''}</div>`;
       if (set.allowRooms && createOpen) {
         h += `<div class="createBox">
           <label class="fld">방 이름을 입력하세요.<input id="crName" maxlength="12" placeholder="예) 6-1 문화탐험대"></label>
           <div class="gRow"><span>최대 인원</span><button class="nbtn sm ${createMax === 4 ? 'blue' : 'gray'}" data-max="4">4명</button><button class="nbtn sm ${createMax === 5 ? 'blue' : 'gray'}" data-max="5">5명</button></div>
-          <div class="rowc"><button class="ib" id="crCancel"><img src="${BTN('cancel', 'n')}" alt="취소"></button><button class="ib" id="crOk"><img src="${BTN('create', 'n')}" alt="방 만들기"></button></div></div>`;
+          <div class="rowc"><button class="ib" id="crCancel"><img src="img/v2/b_cancel.webp" alt="취소"></button><button class="ib" id="crOk"><img src="img/v2/b_create.webp" alt="방 만들기"></button></div></div>`;
       }
       if (set.allowRooms && S.rooms.length) {
-        h += `<div class="rooms">${S.rooms.map((r) => { const full = r.players.length >= (r.max || 5); return `<div class="rcard"><h4>${esc(r.name)} · ${esc(r.title)}</h4><div class="avs">${r.players.map((p) => `<img src="${AV(p.char)}" title="${esc(p.name)}">`).join('')}</div><div class="n">${r.players.length} / ${r.max || 5}명</div><button class="ib" data-joinroom="${r.id}" ${full ? 'disabled' : ''}><img src="${BTN('join', full ? 'd' : 'n')}" alt="방 참가하기"></button></div>`; }).join('')}</div>`;
+        h += `<div class="rooms">${S.rooms.map((r) => { const full = r.players.length >= (r.max || 5); return `<div class="rcard"><h4>${esc(r.name)} · ${esc(r.title)}</h4><div class="avs">${r.players.map((p) => `<img src="${AV(p.char)}" title="${esc(p.name)}">`).join('')}</div><div class="n">${r.players.length} / ${r.max || 5}명</div><button class="ib" data-joinroom="${r.id}" ${full ? 'disabled' : ''}><img src="img/v2/b_join${full ? '_d' : ''}.webp" alt="방 참가하기"></button></div>`; }).join('')}</div>`;
       }
     }
     const keep = $('crName') ? $('crName').value : '';
