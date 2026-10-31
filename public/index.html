@@ -82,32 +82,31 @@
 
   <!-- 5. 게임 (시안: 학생용 메인 보드) -->
   <section class="scr" id="sGame">
-    <div class="hBox gLogo"><div class="logoTxt"><b>K-Culture</b><span>마스터 | 학생용</span></div></div>
-    <div class="hBox gMarketT"><b>전통문화 카드 시장</b><small id="gMarketSub">1·2·3단계 각 4장 | 15점 달성 시 마지막 라운드</small></div>
-    <div class="hBox gBonusT"><b>보너스 카드 5종 (조건 달성 시 +3점)</b></div>
-    <div class="hBox gTurnT"><b id="gTurnWho">현재 차례 -</b><small id="gTurnSub">목표 15점</small><div class="tbar"><i id="gTurnBar"></i></div></div>
-    <div class="gLeft">
-      <div class="gClock" id="gClock"><span>남은 시간</span><b id="gTime">--:--</b></div>
-      <div class="gBtns"><button class="tbtn" id="btnSfx" title="효과음">🔊</button><button class="tbtn" data-open="rules" title="게임 방법">❓</button><button class="tbtn" data-open="gear" title="설정">⚙</button></div>
+    <img src="img/v2/logo.webp" class="gLogo" alt="K-Culture 마스터">
+    <div class="gIcons">
+      <button class="ib ic" id="btnSfx" title="효과음"><img src="img/v2/ic_sound.webp" alt="효과음"></button>
+      <button class="ib ic" id="btnBgm" title="배경음악"><img src="img/v2/ic_music.webp" alt="배경음악"></button>
+      <button class="ib ic" data-open="rules" title="게임 방법"><img src="img/v2/ic_help.webp" alt="게임 방법"></button>
+      <button class="ib ic" data-open="gear" title="설정"><img src="img/v2/ic_gear.webp" alt="설정"></button>
+      <button class="ib ic exit" id="btnExit" title="게임 나가기"><img src="img/v2/btn_exit.webp" alt="게임 나가기"></button>
     </div>
-    <div class="gMyTurn" id="gMyTurn"></div>
-    <div class="gLog" id="gLog"></div>
-    <div class="bonusRow" id="gNobles"></div>
-    <div class="hBox bank" id="gBank"></div>
+    <div class="bonusBox"><div class="boxTitle">보너스 카드 (3점)</div><div class="bonusRow" id="gNobles"></div></div>
+    <div class="bank" id="gBank"></div>
     <div class="tiers" id="gTiers"></div>
     <div class="opp" id="opp0"></div><div class="opp" id="opp1"></div><div class="opp" id="opp2"></div><div class="opp" id="opp3"></div>
-    <div class="hBox mine" id="gMine">
-      <div class="meBox" id="mMe"></div>
-      <div class="mSec mBought"><div class="h">내가 구매한 카드 · 영구 할인</div><div class="row" id="mCards"></div><div class="disc" id="mDisc"></div></div>
-      <div class="mSec mRsv"><div class="h">내 예약 카드 (최대 3장)</div><div class="row" id="mRsv"></div></div>
-      <div class="acts">
-        <div class="actGrid">
-          <button class="ib ab" id="btnTake" data-k="take"><img alt="자원 가져오기"></button>
-          <button class="ib ab" id="btnBuyMode" data-k="buy"><img alt="카드 구매하기"></button>
-          <button class="ib ab" id="btnResMode" data-k="reserve"><img alt="카드 예약하기"></button>
-          <button class="ib ab" id="btnEnd" data-k="end"><img alt="턴 종료하기"></button>
-        </div>
-        <div class="actTip" id="actTip"></div>
+    <div class="mine" id="gMine">
+      <div class="mSec me" id="mMe"></div>
+      <div class="mSec tok"><div class="h" id="mTkH">내 자원 토큰</div><div class="toks" id="mToks"></div></div>
+      <div class="mSec cards"><div class="h" id="mCardsH">내가 구매한 카드</div><div class="row" id="mCards"></div></div>
+      <div class="mSec rv"><div class="h">내가 가진 예약 카드 (최대 3장)</div><div class="row" id="mRsv"></div></div>
+    </div>
+    <div class="acts">
+      <div class="turnLine"><div class="tinfo" id="gClock"><span class="tm">⏳ 남은 시간 <b id="gTime">--:--</b></span><span>목표 <b id="gTarget">5</b>점</span></div><span id="gTurnWho">-</span><div class="tbar"><i id="gTurnBar"></i></div></div>
+      <div class="actGrid">
+        <button class="ib ab" id="btnTake" data-k="take"><img alt="자원 가져오기"></button>
+        <button class="ib ab" id="btnBuyMode" data-k="buy"><img alt="카드 구매하기"></button>
+        <button class="ib ab" id="btnResMode" data-k="reserve"><img alt="카드 예약하기"></button>
+        <button class="ib ab" id="btnEnd" data-k="end"><img alt="턴 종료하기"></button>
       </div>
     </div>
     <div class="modeTip" id="modeTip"></div>
@@ -251,6 +250,14 @@
     <div class="npop bookPop">
       <div class="nHead">전통문화 카드 도감</div><button class="xB" data-close aria-label="닫기">×</button>
       <div class="nBody"><div class="tabs2" id="bookTabs"></div><div class="bookList" id="bookList"></div></div>
+    </div>
+  </div>
+
+  <div class="layer" id="mExit">
+    <div class="npop donePop">
+      <div class="nHead">게임 나가기</div>
+      <div class="nBody"><b>처음 화면으로 나갈까요?</b><small>게임은 계속 진행돼요. 게임 시작을 다시 누르면 이어서 할 수 있어요.</small>
+        <div class="rowc" style="margin-top:0"><button class="ib" data-close><img src="img/n/btn/cancel_n.webp" alt="취소"></button><button class="ib" id="exitOk"><img src="img/n/btn/ok_n.webp" alt="확인"></button></div></div>
     </div>
   </div>
 

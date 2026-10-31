@@ -9,7 +9,11 @@
   const PH = (id) => `img/n/ph/${id}.webp`;
   const CARDIMG = (id) => `img/n/card/${id}.webp`;
   const BTN = (k, s) => `img/n/btn/${k}_${s}.webp`;
-  const tk = (k, cls = '') => `<i class="tk ${k} ${cls}">${CAT_INFO[k].s}</i>`;
+  const TOK = (k) => `img/v2/tok_${k}.webp`;
+  const tk = (k, cls = '') => `<img class="tk tki ${k} ${cls}" src="${TOK(k)}" alt="${CAT_INFO[k].ko}">`;
+  const LT = { food: 'F', clothing: 'C', play: 'P', craft: 'A', heritage: 'H' };
+  const cdots = (cost) => Object.keys(cost).filter((k) => cost[k]).map((k) => `<span><i class="dot ${k}"></i>${cost[k]}</span>`).join('');
+  const cth = (id, cls = '', extra = '') => `<div class="cth ${CARDS[id].cat} ${cls}" data-card="${id}" title="${esc(CARDS[id].name)}"><img src="${PH(id)}" alt=""><div class="cs2">${Object.keys(CARDS[id].cost).map((k) => `<i class="dot ${k}"></i>`).join('')}</div>${extra}</div>`;
   const dots = (cost, have) => `<div class="cost">${Object.keys(cost).filter((k) => cost[k]).map((k) => `<span class="${have && (have[k] || 0) < cost[k] ? 'short' : ''}"><i class="dot ${k}"></i>${cost[k]}</span>`).join('')}</div>`;
   const shortName = (c) => c.name.replace(/\s*\(.*\)/, '');
   const stage = $('stage');
@@ -230,38 +234,33 @@
       closeL('mTake'); closeL('mDone'); setMode(null);
       if (cardOpen) { closeL('mCard'); cardOpen = null; }
     }
-    $('gMarketSub').textContent = `1·2·3단계 각 4장 | ${g.target}점 달성 시 마지막 라운드`;
-    $('gTurnWho').textContent = t ? `현재 차례 ${myTurn ? '나' : nameOf(g, t.pid)}` : '-';
-    $('gTurnSub').textContent = `목표 ${g.target}점 · ${g.round}라운드${g.finalRound ? ' · 마지막!' : ''}`;
-    const mt = $('gMyTurn');
+    $('gTarget').textContent = g.target;
     if (t) {
       const who = g.ps[t.pid];
-      mt.classList.toggle('myturn', myTurn && (!t.done || (buyOpen(t) && canAfford(g, my))));
-      mt.innerHTML = `<img src="${AV(who.char)}" alt=""><div>${myTurn ? (t.q ? '<em>영어 문제를 풀어요!</em>' : t.done ? (buyOpen(t) && canAfford(g, my) ? '<em>카드 1장 더 살 수 있어요!</em><br>사거나 턴 종료하기' : '<em>행동 완료!</em><br>턴 종료하기를 눌러요') : '<em>내 차례예요!</em><br>행동 1가지를 골라요') : `<b>${esc(who.name)}</b> 학생 차례<br><small>${phase(g)}</small>`}</div>`;
+      $('gTurnWho').innerHTML = (myTurn ? (t.q ? '<em>영어 문제를 풀어요!</em>' : t.done ? (buyOpen(t) && canAfford(g, my) ? '<em>카드 1장 더 살 수 있어요!</em>' : '<em>행동 완료!</em> 턴 종료하기') : '<em>내 차례예요!</em> 행동을 골라요') : `<em>${esc(who.name)}</em> 학생 차례 · ${phase(g)}`) + (g.finalRound ? ' · 마지막 바퀴!' : '');
     }
+    $('gMine').classList.toggle('turn', myTurn);
     // 보너스 카드
     $('gNobles').innerHTML = Object.keys(NOBLES).map((nid) => {
       const nb = NOBLES[nid], own = g.nobles[nid], ok = !own && KC.nobleOk(nid, my.cards);
-      return `<div class="nob ${own ? 'got' : ''} ${ok ? 'ok' : ''}" data-nob="${nid}"><img class="p" src="img/n/bph/${nid}.webp" alt="${nb.name}"><div class="nr"><span class="n">${nb.name}</span><span class="pt">+${nb.pts}점</span><span class="r">${Object.keys(nb.need).map((k) => `<span><i class="dot ${k}"></i>${nb.need[k]}</span>`).join('')}</span></div>${own ? `<img class="own" src="${AV(g.ps[own] && g.ps[own].char)}" title="${esc(nameOf(g, own))}">` : ''}</div>`;
+      return `<div class="nob ${own ? 'got' : ''} ${ok ? 'ok' : ''}" data-nob="${nid}"><img class="p" src="img/n/bph/${nid}.webp" alt="${nb.name}"><div class="t">${nb.ko} <b>+${nb.pts}점</b></div><div class="r">${Object.keys(nb.need).map((k) => `<i class="dot ${k}"></i>${nb.need[k]}`).join(' ')}</div>${own ? `<img class="own" src="${AV(g.ps[own] && g.ps[own].char)}" title="${esc(nameOf(g, own))}">` : ''}</div>`;
     }).join('');
     // 공동 자원
     const canAct = myTurn && !t.done && !t.q && !S.paused;
     const canBuyT = myTurn && buyOpen(t);
-    $('gBank').innerHTML = `<span class="lb">공동 자원</span>` + CATS.map((k) => `<div class="coin ${canAct && g.bank[k] > 0 ? 'can' : ''} ${g.bank[k] <= 0 ? 'empty' : ''}" data-k="${k}">${tk(k)}<span>${CAT_INFO[k].ko} <b>${g.bank[k]}</b>개</span></div>`).join('') + `<div class="coin gold">황금 <b>${g.bank.wild}</b>개</div>`;
+    $('gBank').innerHTML = TK.map((k) => `<div class="coin ${canAct && k !== 'wild' && g.bank[k] > 0 ? 'can' : ''} ${g.bank[k] <= 0 ? 'empty' : ''}" data-k="${k}" title="${CAT_INFO[k].ko}"><img src="${TOK(k)}" alt="${CAT_INFO[k].ko}"><b>${g.bank[k]}</b></div>`).join('');
     // 카드 시장
-    $('gTiers').innerHTML = [1, 2, 3].map((tn) => `<div class="tier t${tn}"><div class="tierHead"><b>${TIERS[tn].ko}</b><span>${TIERS[tn].sub}</span><small>남은 ${g.deckCounts ? g.deckCounts[tn] : 0}장</small></div><div class="tierGrid">${(g.tiers ? g.tiers[tn] : []).map((id) => (id ? marketCard(id, canBuyT && KC.payPlan(id, my.cards, my.tokens)) : '<div class="slotE">카드 없음</div>')).join('')}</div></div>`).join('');
+    $('gTiers').innerHTML = [1, 2, 3].map((tn) => `<div class="tier t${tn}"><div class="tierHead">${TIERS[tn].ko} 카드<small>(점수 ${TIERS[tn].pts.replace('점', '')} · 남은 ${g.deckCounts ? g.deckCounts[tn] : 0}장)</small></div><div class="tierGrid">${(g.tiers ? g.tiers[tn] : []).map((id) => (id ? marketCard(id, canBuyT && KC.payPlan(id, my.cards, my.tokens)) : '<div class="slot">카드 없음</div>')).join('')}</div></div>`).join('');
     $('gTiers').classList.toggle('mode-buy', mode === 'buy'); $('gTiers').classList.toggle('mode-reserve', mode === 'reserve');
     // 친구 공개 정보
     const others = []; const mi = g.order.indexOf(me);
     for (let k = 1; k < g.order.length; k++) others.push(g.order[(mi + k) % g.order.length]);
     SLOT_ORDER.forEach((sid, i) => { const el = $(sid); const pid = others[i]; if (!pid) { el.className = 'opp'; el.innerHTML = ''; delete el.dataset.pid; return; } renderOpp(el, pid, g); });
     renderMine(g, my, me, canBuyT);
-    $('gLog').innerHTML = '<h5>📢 최근 소식</h5>' + (g.log || []).slice(-4).reverse().map((l) => `<p class="${l.type}">${esc(l.msg)}</p>`).join('');
     setAct('btnTake', canAct && CATS.some((k) => g.bank[k] > 0));
     setAct('btnBuyMode', canBuyT);
     setAct('btnResMode', canAct && my.reserved.length < 3);
     setAct('btnEnd', myTurn && !t.q);
-    $('actTip').textContent = myTurn ? (t.done ? (canBuyT ? '카드 1장을 더 살 수 있어요. 다 했으면 턴 종료하기!' : '행동을 마쳤어요. 턴 종료하기를 누르면 다음 학생 차례!') : S.settings.fast ? '자원 가져오기 또는 카드 예약 + 카드 1장 구매' : '한 차례에 한 가지 행동: 자원 가져오기 · 카드 구매 · 카드 예약') : '내 차례가 오면 버튼이 밝아져요.';
     renderQuestion();
     if (cardOpen) renderCardDetail(cardOpen);
     if (plOpen) renderPlayer(plOpen);
@@ -270,42 +269,38 @@
   }
   function marketCard(id, can) {
     const c = CARDS[id];
-    return `<div class="mc ${c.cat} ${can ? 'can' : ''}" data-card="${id}"><div class="nm">${esc(c.name)}</div><img class="ph" src="${PH(id)}" alt="" draggable="false"><div class="info"><div class="pt"><b>${c.pts}점</b><span>할인 +1<br>${CAT_INFO[c.cat].ko}</span></div><span class="lbl2">구매 비용</span>${dots(c.cost)}</div><div class="ft"><span>${c.no}</span><em>${can ? '구매 가능' : '카드 정보'}</em></div></div>`;
+    return `<div class="mc ${c.cat} ${can ? 'can' : ''}" data-card="${id}"><span class="pt">${c.pts}</span><img class="ph" src="${PH(id)}" alt="" draggable="false"><div class="nm">${esc(c.ko)}</div><div class="cs">${cdots(c.cost)}<span class="lt" title="${CAT_INFO[c.cat].ko} 영구 할인 +1">${LT[c.cat]}</span></div></div>`;
   }
   const ABK = { btnTake: 'take', btnBuyMode: 'buy', btnResMode: 'reserve', btnEnd: 'end' };
   function setAct(id, on) {
     const b = $(id); const k = ABK[id];
     const st = !on ? 'd' : mode === k ? 'h' : 'n';
     const img = b.querySelector('img'); if (img.dataset.n) return;
-    const src = BTN(k, st);
+    const src = `img/v2/ab_${k}_${st}.webp`;
     if (img.getAttribute('src') !== src) img.setAttribute('src', src);
     b.disabled = !on; b.classList.toggle('on', on && mode === k);
   }
-  function thumbs(cards, max) {
+  function cardRow(cards, max) {
     const list = cards.slice(-max);
-    return list.map((id) => `<img src="${PH(id)}" title="${esc(CARDS[id].name)}" style="border-color:var(--${CARDS[id].cat})">`).join('') + (cards.length > max ? `<span class="more">+${cards.length - max}</span>` : '');
+    return list.map((id, i) => cth(id, '', i === 0 && cards.length > max ? `<b>+${cards.length - max}</b>` : '')).join('');
   }
   function renderOpp(el, pid, g) {
     const p = g.ps[pid], seat = g.order.indexOf(pid), t = g.turn; const disc = KC.catCounts(p.cards);
     el.className = `opp on c${seat % 5} ${t && t.pid === pid ? 'turn' : ''} ${p.online ? '' : 'off'}`;
     el.dataset.pid = pid;
-    const port = stage.classList.contains('port');
-    el.innerHTML = `<div class="oHead"><img src="${AV(p.char)}" alt=""><span>${esc(p.name)} · 공개 정보</span><span class="sc">${p.score}점</span></div>
-      <div class="oBody"><div class="lb"><span>보유 토큰 (${totTok(p)}/10)</span><span>${p.online ? '' : '접속 끊김'}</span></div>
-      <div class="oToks">${TK.map((k) => `<div class="t">${tk(k, 'sm')}${p.tokens[k]}</div>`).join('')}</div>
-      <div class="lb"><span>영구 할인</span></div><div class="oDisc">${CATS.map((k) => `<i style="background:${disc[k] ? `var(--${k})` : '#c9b99a'}">${disc[k]}</i>`).join('')}<i style="background:transparent"></i></div>
-      <div class="lb"><span>구매 카드 ${p.cards.length}장</span><span>예약 ${p.reserved.length}장</span></div>
-      <div class="oCards">${thumbs(p.cards, port ? 6 : 4)}${p.reserved.map((id) => `<img class="rs" src="${PH(id)}" title="예약: ${esc(CARDS[id].name)}">`).join('')}</div></div>`;
+    el.innerHTML = `<div class="oHead"><span class="num">${seat + 1}</span><span class="nm">${esc(p.name)}</span><span class="sc">점수 <b>${p.score}</b></span></div>
+      <div class="oMid"><img class="ava" src="${AV(p.char)}"><div class="toks">${TK.map((k) => `<div class="t"><img src="${TOK(k)}" alt="${CAT_INFO[k].ko}"><b>${p.tokens[k]}</b>${k !== 'wild' ? `<i style="background:${disc[k] ? `var(--${k})` : '#c9b99a'}">할인${disc[k]}</i>` : `<i style="background:#c9b99a">${totTok(p)}/10</i>`}</div>`).join('')}</div></div>
+      <div class="oCards"><div class="oSec buy"><div class="h">구매한 카드 ${p.cards.length}장</div><div class="row">${p.cards.length ? cardRow(p.cards, 3) : '<span class="noneS">아직 없어요</span>'}</div></div>
+      <div class="oSec rsv"><div class="h">예약 카드 ${p.reserved.length}/3</div><div class="row">${p.reserved.map((id) => cth(id, 'rs')).join('') || '<span class="noneS">없음</span>'}</div></div></div>`;
   }
   function renderMine(g, my, me, canAct) {
-    const t = g.turn, disc = KC.catCounts(my.cards); const myTurn = t && t.pid === me;
-    $('mMe').innerHTML = `<div class="who"><img src="${AV(my.char)}" alt="">${esc(my.name)} (나)${myTurn ? ' | 내 차례' : ''}</div><div class="sc">현재 <b>${my.score}</b>점</div>
-      <div class="lb">내 보유 토큰 (${totTok(my)}/10)</div><div class="toks">${TK.map((k) => `<div class="t">${tk(k, 'sm')}${my.tokens[k]}</div>`).join('')}</div>
-      <div class="ft">황금 ${my.tokens.wild}개 · 예약 ${my.reserved.length}/3장 · 힌트 ${my.hints}</div>`;
-    const by = {}; my.cards.forEach((id) => (by[CARDS[id].cat] = by[CARDS[id].cat] || []).push(id));
-    $('mCards').innerHTML = CATS.filter((k) => by[k]).map((k) => `<div class="stk ${k}" data-card="${by[k][by[k].length - 1]}"><img src="${PH(by[k][by[k].length - 1])}" alt=""><span>${CAT_INFO[k].ko} +${by[k].length}</span>${by[k].length > 1 ? `<b>×${by[k].length}</b>` : ''}</div>`).join('') || '<span class="none">자원을 모아 카드를 사 보세요!</span>';
-    $('mDisc').textContent = '영구 할인: ' + CATS.map((k) => `${CAT_INFO[k].ko} ${disc[k]}`).join(' · ');
-    $('mRsv').innerHTML = my.reserved.map((id) => `<div class="rsvC ${canAct && KC.payPlan(id, my.cards, my.tokens) ? 'can' : ''}" data-card="${id}"><img src="${PH(id)}" alt=""><span>${esc(shortName(CARDS[id]))}</span></div>`).join('') + Array.from({ length: 3 - my.reserved.length }, () => '<div class="rsvE">예약 가능</div>').join('');
+    const seat = g.order.indexOf(me), disc = KC.catCounts(my.cards);
+    $('mMe').innerHTML = `<div><div class="nmBox"><span class="num">${seat + 1}</span>${esc(my.name)} (나)</div><img class="ava" src="${AV(my.char)}" style="margin-top:6px"></div><div class="scBox">점수<b>${my.score}</b></div>`;
+    $('mTkH').textContent = `내 자원 토큰 (${totTok(my)}/10)`;
+    $('mToks').innerHTML = TK.map((k) => `<div class="t"><img src="${TOK(k)}" alt="${CAT_INFO[k].ko}"><b>${my.tokens[k]}</b>${k !== 'wild' ? `<i style="background:${disc[k] ? `var(--${k})` : '#c9b99a'}">할인${disc[k]}</i>` : '<i style="background:#e0a800">황금</i>'}</div>`).join('');
+    $('mCardsH').textContent = `내가 구매한 카드 (${my.cards.length}장)`;
+    $('mCards').innerHTML = my.cards.length ? cardRow(my.cards, 8) : '<span class="none">자원을 모아 카드를 사 보세요!</span>';
+    $('mRsv').innerHTML = my.reserved.map((id) => cth(id, canAct && KC.payPlan(id, my.cards, my.tokens) ? 'can rsvC' : 'rsvC')).join('') + Array.from({ length: 3 - my.reserved.length }, () => '<div class="slotS"></div>').join('');
   }
 
   function setMode(m) {
@@ -370,6 +365,8 @@
   $('btnEnd').onclick = endTurn; $('doneNext').onclick = endTurn;
   $('gTiers').addEventListener('click', (e) => { const c = e.target.closest('.mc'); if (c) openCard(c.dataset.card, mode || 'buy'); });
   $('gMine').addEventListener('click', (e) => { const c = e.target.closest('[data-card]'); if (c) openCard(c.dataset.card, c.classList.contains('rsvC') ? 'buy' : 'view'); });
+  $('btnExit').onclick = () => { SND.play('click'); openL('mExit'); };
+  $('exitOk').onclick = () => { SND.play('click'); closeL('mExit'); closeAll(); local = 'title'; show('sTitle'); };
   $('gNobles').addEventListener('click', (e) => { const n = e.target.closest('[data-nob]'); if (n) { const nb = NOBLES[n.dataset.nob]; SND.play('card'); fxShow(`<img class="cardBig" src="img/n/bonus/${nb.id}.webp"><div class="cap">${nb.name} (${nb.ko}) +${nb.pts}점 · ${nb.rule} 카드 모으기</div>`, 2600); } });
   document.querySelectorAll('.opp').forEach((el) => el.addEventListener('click', () => { if (!el.dataset.pid) return; SND.play('card'); plOpen = el.dataset.pid; renderPlayer(plOpen); openL('mPlayer'); }));
 
@@ -571,7 +568,7 @@
   function gearUI() {
     $('vSfx').value = Math.round(SND.sv * 100); $('vBgm').value = Math.round(SND.bv * 100);
     $('tSfx').checked = SND.sfx; $('tBgm').checked = SND.bgm;
-    $('btnSfx').classList.toggle('off', !SND.sfx); $('btnSfx').textContent = SND.sfx ? '🔊' : '🔇';
+    $('btnSfx').classList.toggle('off', !SND.sfx); $('btnBgm').classList.toggle('off', !SND.bgm);
   }
   $('vSfx').oninput = () => SND.setVol('sv', $('vSfx').value / 100);
   $('vSfx').onchange = () => SND.play('click');
@@ -579,6 +576,7 @@
   $('tSfx').onchange = () => { if ($('tSfx').checked !== SND.sfx) SND.toggleSfx(); gearUI(); SND.play('click'); };
   $('tBgm').onchange = () => { if ($('tBgm').checked !== SND.bgm) SND.toggleBgm(); gearUI(); };
   $('btnSfx').onclick = () => { SND.toggleSfx(); gearUI(); SND.play('click'); toast(SND.sfx ? '효과음 켜짐' : '효과음 꺼짐', 'info', 1200); };
+  $('btnBgm').onclick = () => { SND.toggleBgm(); gearUI(); toast(SND.bgm ? '배경음악 켜짐' : '배경음악 꺼짐', 'info', 1200); };
   $('fsOn').onclick = () => { try { document.documentElement.requestFullscreen(); } catch {} };
   $('fsOff').onclick = () => { try { if (document.fullscreenElement) document.exitFullscreen(); } catch {} };
   gearUI();
