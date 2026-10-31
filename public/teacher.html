@@ -9,14 +9,15 @@
 </head>
 <body>
 <header class="hdr">
-  <img src="img/t/logo.webp" class="logo" alt="K-Culture 마스터">
-  <div class="plaque" id="plaque">교사용 관리 화면</div>
+  <div class="brand"><b>K-Culture Masters</b><small id="plaque">교사용 실시간 모니터링 | 6학년 영어 11단원</small></div>
+  <div class="hStat" id="hStat">참여 0 / 0명 &nbsp; 진행 0 / 0방</div>
   <nav class="topBtns" id="topBtns">
-    <button class="tb blue" data-v="auto">👥 학생 자동 배정</button>
-    <button class="tb blue2" data-v="manual">✋ 수동 배정</button>
-    <button class="tb green" data-c="startAll">▶ 전체 게임 시작</button>
-    <button class="tb orange" data-c="pause" id="tbPause">⏸ 일시 정지</button>
-    <button class="tb red" data-c="endAll">■ 전체 종료</button>
+    <button class="ib" data-v="auto" title="학생 자동 배정"><img src="img/n/btn/auto_n.webp" alt="학생 자동 배정"></button>
+    <button class="ib" data-v="manual" title="수동 배정"><img src="img/n/btn/manual_n.webp" alt="수동 배정"></button>
+    <button class="ib" data-c="startAll" title="전체 게임 시작"><img src="img/n/btn/start_n.webp" alt="게임 시작"></button>
+    <button class="ib" data-c="pause" id="tbPause" title="전체 일시 정지"><img src="img/n/btn/pause_n.webp" alt="일시 정지"></button>
+    <button class="tb sky tm" data-c="extendPop">⏱ 시간 연장</button>
+    <button class="ib" data-c="endAll" title="전체 종료"><img src="img/n/btn/endall_n.webp" alt="전체 종료"></button>
     <button class="tb navy sqb" data-open="settings" title="설정">⚙</button>
   </nav>
 </header>
@@ -25,7 +26,7 @@
   <div class="pnl wide">
     <div class="ph">수업 만들기</div>
     <div class="pb center">
-      <img src="img/t/kids.webp" class="kids" alt="">
+      <div class="startCards"><img src="img/n/card/songpyeon.webp"><img src="img/n/card/hanbok.webp"><img src="img/n/card/yutnori.webp"><img src="img/n/card/celadon.webp"><img src="img/n/card/gyeongbokgung.webp"></div>
       <p>새 수업을 만들면 학생들이 들어올 <b>방 코드 4자리</b>가 생겨요.</p>
       <button class="tb green big" id="bCreate">＋ 새 수업 만들기</button>
       <button class="tb gray" id="bResume" style="display:none">이전 수업 이어서 열기</button>
@@ -36,7 +37,8 @@
 
 <div id="vApp" style="display:none">
   <div class="tabsTop" id="tabsTop">
-    <button data-v="dash" class="on">🏠 전체 관리</button>
+    <button data-v="live" class="on">📺 실시간 모니터</button>
+    <button data-v="dash">🏠 전체 관리</button>
     <button data-v="auto">👥 자동 배정</button>
     <button data-v="manual">✋ 수동 배정</button>
     <button data-v="monitor">🔍 방별 모니터링</button>
@@ -46,8 +48,20 @@
   </div>
   <div class="stats" id="stats"></div>
 
+  <!-- 실시간 모니터 (시안: 교사용 실시간 모니터링 6방) -->
+  <section class="view on" id="v-live">
+    <div class="liveWrap">
+      <div class="liveGrid" id="lGrid"></div>
+      <div class="pnl lSel"><div class="ph big" id="lSelHead">선택한 방</div><div class="pb" id="lSel"></div></div>
+    </div>
+    <div class="liveBot">
+      <div class="pnl"><div class="ph big">실시간 진행 상황</div><div class="pb lFeed" id="lFeed"></div></div>
+      <div class="pnl"><div class="ph big">교사용 확인</div><div class="pb lCheck" id="lCheck"></div></div>
+    </div>
+  </section>
+
   <!-- 전체 관리 -->
-  <section class="view on" id="v-dash">
+  <section class="view" id="v-dash">
     <div class="dashTop">
       <div class="pnl studPnl"><div class="ph">👥 전체 학생 목록 <span id="dCount"></span></div>
         <div class="pb"><input class="search" id="dSearch" placeholder="🔍 학생 이름 검색…">
@@ -94,11 +108,11 @@
       <div class="rightCol">
         <div class="roomGrid preview" id="aRooms"></div>
         <div class="autoBtns">
-          <button class="tb blue huge" id="aRun">🔀 자동 배정하기</button>
+          <button class="ib" id="aRun"><img src="img/n/btn/auto_n.webp" alt="학생 자동 배정"></button>
           <button class="tb green huge" id="aApply" disabled>▶ 배정 결과 적용</button>
-          <button class="tb gray huge" id="aAgain" disabled>↻ 다시 배정하기</button>
+          <button class="ib" id="aAgain" disabled><img src="img/n/btn/reassign_d.webp" alt="다시 배정하기"></button>
           <div class="speech" id="aSay">학생을 선택하고 자동 배정하기를 눌러 주세요!</div>
-          <img src="img/v2/chn_seoyeon.webp" class="guide" alt="">
+          <img src="img/n/t/teacher.webp" class="guide" alt="">
         </div>
       </div>
     </div>
@@ -164,8 +178,8 @@
       <div class="qSideCol">
         <div class="pnl"><div class="ph">📥 엑셀 업로드</div><div class="pb upl">
           <div class="steps4" id="uSteps"><span class="on"><b>1</b>파일 선택</span><span><b>2</b>형식 확인</span><span><b>3</b>업로드</span><span><b>4</b>결과 확인</span></div>
-          <label class="drop" id="drop"><div class="xl">X</div>엑셀 파일을 끌어 놓거나 클릭하세요.<small>(xlsx, xls, csv 파일)</small><span class="tb green sm">파일 선택하기</span><input type="file" id="qFile" accept=".xlsx,.xls,.csv" hidden></label>
-          <button class="tb sky sm wide" id="qTpl">⬇ 엑셀 양식 다운로드</button>
+          <label class="drop" id="drop"><div class="xl">X</div>엑셀 파일을 끌어 놓거나 클릭하세요.<small>(xlsx, xls, csv 파일)</small><img src="img/n/btn/excel_n.webp" alt="엑셀 업로드" style="height:46px"><input type="file" id="qFile" accept=".xlsx,.xls,.csv" hidden></label>
+          <button class="tb blue sm wide" id="qTpl">⬇ 엑셀 양식 다운로드</button>
           <button class="tb gray sm wide" id="qExport">⬇ 지금 문제 엑셀로 내보내기</button>
         </div></div>
         <div class="pnl"><div class="ph">📊 업로드 결과</div><div class="pb" id="uRes"><div class="resRow"><div class="rbox ok">✅ 성공<b>0개</b></div><div class="rbox bad">❌ 실패<b>0개</b></div><div class="rbox dup">🔁 중복<b>0개</b></div></div><p class="muted">엑셀 파일을 올리면 결과가 여기에 보여요.</p></div></div>
@@ -180,7 +194,7 @@
 
   <!-- 결과 -->
   <section class="view" id="v-results">
-    <div class="pnl"><div class="ph">🏆 학생별 누적 결과 <span class="phR"><button class="mini green" id="rXlsx">⬇ 엑셀 저장</button><button class="mini" id="rClear">기록 지우기</button></span></div><div class="pb" id="rTotal"></div></div>
+    <div class="pnl"><div class="ph">🏆 학생별 누적 결과 <span class="phR"><button class="mini blue" id="rOpen">📊 결과 분석</button><button class="mini green" id="rXlsx">⬇ 엑셀 저장</button><button class="mini" id="rClear">기록 지우기</button></span></div><div class="pb" id="rTotal"></div></div>
     <div id="rGames"></div>
   </section>
 </div>
@@ -188,18 +202,31 @@
 <!-- 팝업 -->
 <div class="layer" id="pSettings"><div class="pnl popW"><div class="ph">⚙ 게임 설정<button class="x" data-close>✕</button></div><div class="pb setGrid">
   <label>제한 시간 <select id="stTime"><option>5</option><option>8</option><option>10</option><option>12</option><option>15</option><option>20</option><option>25</option><option>30</option></select> 분</label>
-  <label>목표 점수 <select id="stTarget"><option>8</option><option>10</option><option>12</option><option>15</option><option>18</option><option>20</option></select> 점</label>
+  <label>목표 점수 <select id="stTarget"><option>3</option><option>4</option><option>5</option><option>6</option><option>8</option><option>10</option><option>12</option><option>15</option></select> 점</label>
   <label>한 차례 시간 <select id="stTurn"><option>30</option><option>45</option><option>60</option><option>90</option><option>120</option></select> 초</label>
   <label>문제 푸는 시간 <select id="stQ"><option>15</option><option>20</option><option>25</option><option>30</option><option>45</option></select> 초</label>
   <label>힌트 (한 판에) <select id="stHints"><option>0</option><option>1</option><option>2</option><option>3</option></select> 번</label>
   <label>방 인원 수 <select id="stSize"><option>2</option><option>3</option><option>4</option><option>5</option></select> 명</label>
+  <label class="chk"><input type="checkbox" id="stFast"> 빠른 진행 (정답이면 자원 2배 · 같은 차례에 카드 1장 더 구매)</label>
   <label class="chk"><input type="checkbox" id="stRooms"> 학생이 방을 만들고 들어갈 수 있게 하기</label>
   <label class="chk"><input type="checkbox" id="stHost"> 학생 방장이 스스로 게임을 시작할 수 있게 하기</label>
   <p class="muted">설정은 다음에 시작하는 게임부터 적용돼요.</p>
 </div></div></div>
-<div class="layer" id="pConfirm"><div class="pnl popS"><div class="ph">안내 팝업</div><div class="pb center"><img src="img/v2/chn_jiho.webp" class="popCh l" alt=""><img src="img/v2/chn_seoyeon.webp" class="popCh r" alt=""><p id="cfMsg"></p><div class="rowb c"><button class="tb gray" id="cfNo">취소</button><button class="tb green" id="cfYes">확인</button></div></div></div></div>
+<div class="layer" id="pConfirm"><div class="pnl popS"><div class="ph">안내 팝업</div><div class="pb center"><img src="img/n/t/teacher.webp" class="popCh l" alt=""><p id="cfMsg"></p><div class="rowb c"><button class="ib" id="cfNo"><img src="img/n/btn/cancel_n.webp" alt="취소"></button><button class="ib" id="cfYes"><img src="img/n/btn/ok_n.webp" alt="확인"></button></div></div></div></div>
 <div class="layer" id="pRename"><div class="pnl popS"><div class="ph">방 이름 변경</div><div class="pb center"><input class="search" id="rnIn" maxlength="14"><div class="rowb c"><button class="tb gray" data-close>취소</button><button class="tb blue" id="rnOk">저장</button></div></div></div></div>
 <div class="layer" id="pQR"><div class="pnl popS"><div class="ph">학생 입장 안내<button class="x" data-close>✕</button></div><div class="pb center"><div class="bigCode" id="qrCode"></div><div id="qr"></div><p id="qrUrl"></p></div></div></div>
+<div class="layer" id="pMsg"><div class="artPop msgPop"><img src="img/n/t/msg.webp" alt="교사 메시지 보내기"><button class="hx" data-close aria-label="닫기"></button>
+  <div class="msgIn"><div class="msgTo" id="msgTo">1번 방 &gt; 전체</div><select id="msgWho"></select>
+    <div class="chips" id="msgChips"></div>
+    <div class="msgRow"><input id="msgText" maxlength="60" placeholder="직접 메시지를 입력하세요."><button class="tb blue" id="msgSend">보내기</button></div></div></div></div>
+<div class="layer" id="pExtend"><div class="artPop extPop"><img src="img/n/t/extend.webp" alt="시간 연장 설정"><button class="hx" data-close aria-label="닫기"></button>
+  <div class="extIn"><div class="extOpts" id="extOpts"><button data-s="30">+ 30초</button><button data-s="60" class="on">+ 1분</button><button data-s="120">+ 2분</button><button data-s="300">+ 5분</button></div>
+    <p id="extMsg">선택한 방의 게임 시간을 연장합니다.</p><select id="extWho"></select><button class="extOk" id="extOk" aria-label="확인"></button></div></div></div>
+<div class="layer" id="pEndRoom"><div class="artPop endPop"><img src="img/n/t/endroom.webp" alt="방 종료 확인"><button class="hx" data-close aria-label="닫기"></button>
+  <div class="endIn"><b id="erMsg">1번 방의 게임을 종료하시겠습니까?</b><small>종료하면 지금 점수로 순위가 정해지고 결과에 저장돼요.</small></div>
+  <button class="erNo" data-close aria-label="취소"></button><button class="erYes" id="erYes" aria-label="종료하기"></button></div></div>
+<div class="layer" id="pResult"><div class="resPopT"><img src="img/n/t/result.webp" alt="게임 종료 결과"><button class="hx" data-close aria-label="닫기"></button>
+  <div class="resIn"><div class="rTabs" id="rTabs"><button data-rt="score" class="on">최종 점수</button><button data-rt="quiz">영어 문제 분석</button><button data-rt="cards">카드 획득 현황</button></div><select id="rWhich"></select><div class="rBody" id="rBody"></div></div></div></div>
 <div class="toast" id="toast"></div>
 
 <script src="lib/qrcode.min.js"></script>

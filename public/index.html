@@ -15,30 +15,28 @@
   <!-- 1. 시작 화면 -->
   <section class="scr" id="sTitle">
     <div class="titleBox">
-      <img src="img/v2/logo.webp" class="bigLogo" alt="K-Culture 마스터">
-      <div class="chRow">
-        <img src="img/v2/chn_jiho.webp" alt="지호"><img src="img/v2/chn_minseo.webp" alt="민서"><img src="img/v2/chn_dohyeon.webp" alt="도현"><img src="img/v2/chn_seoyeon.webp" alt="서연"><img src="img/v2/chn_junho.webp" alt="준호">
-      </div>
+      <div class="logoTxt big"><b>K-Culture</b><span>마스터</span></div>
       <p class="tagline">영어 문제를 맞히고 한국 전통문화 카드를 모아요!</p>
-      <button class="ib big" data-go="join"><img src="img/v2/b_start.webp" alt="게임 시작하기"></button>
+      <div class="titleCards" id="titleCards"></div>
+      <button class="ib big" data-go="join"><img src="img/n/btn/start_n.webp" alt="게임 시작"></button>
       <div class="rowc">
-        <button class="ib" data-open="rules"><img src="img/v2/btn_rules.webp" alt="게임 설명"></button>
-        <button class="ib" data-open="gear"><img src="img/v2/btn_settings.webp" alt="설정"></button>
+        <button class="nbtn sky" data-open="rules">📖 게임 방법</button>
+        <button class="nbtn gray" data-open="gear">⚙ 설정</button>
       </div>
     </div>
   </section>
 
   <!-- 2. 방 참가 -->
   <section class="scr" id="sJoin">
-    <div class="pop solo joinPop">
-      <div class="popHead">방 참가하기</div>
-      <div class="popBody">
+    <div class="npop solo joinPop">
+      <div class="nHead">방 참가하기</div>
+      <div class="nBody">
         <label class="fld">이름을 입력하세요.<input id="inName" maxlength="12" placeholder="예) 지호" autocomplete="off"></label>
         <label class="fld">방 코드 (4자리 숫자)<input id="inCode" class="code" maxlength="4" inputmode="numeric" placeholder="1234" autocomplete="off"></label>
         <div class="msg" id="joinMsg"></div>
         <div class="rowc">
-          <button class="btn3 gray" data-go="title">처음으로</button>
-          <button class="ib" id="btnJoin"><img src="img/v2/b_join.webp" alt="방 참가하기"></button>
+          <button class="ib" data-go="title"><img src="img/n/btn/cancel_n.webp" alt="취소"></button>
+          <button class="ib" id="btnJoin"><img src="img/n/btn/join_n.webp" alt="방 참가하기"></button>
         </div>
       </div>
     </div>
@@ -46,13 +44,13 @@
 
   <!-- 3. 캐릭터 선택 -->
   <section class="scr" id="sSelect">
-    <div class="pop solo selPop">
-      <div class="popHead">캐릭터를 골라요!</div>
-      <div class="popBody">
+    <div class="npop solo selPop">
+      <div class="nHead">캐릭터를 골라요!</div>
+      <div class="nBody">
         <div class="selRow" id="selRow"></div>
         <div class="rowc">
-          <button class="btn3 gray" id="selBack">이전으로</button>
-          <button class="ib" id="btnSelect"><img src="img/v2/b_ok.webp" alt="확인"></button>
+          <button class="ib" id="selBack"><img src="img/n/btn/cancel_n.webp" alt="취소"></button>
+          <button class="ib" id="btnSelect"><img src="img/n/btn/ok_n.webp" alt="확인"></button>
         </div>
       </div>
     </div>
@@ -61,49 +59,55 @@
   <!-- 4. 대기실 -->
   <section class="scr" id="sLobby">
     <div class="lbTop">
-      <img src="img/v2/logo.webp" class="lbLogo" alt="">
-      <div class="ribbon" id="lbTitle">대기 중입니다</div>
-      <div class="lbMe"><img id="lbAv" class="ava"><div><b id="lbName">-</b><small>방 코드 <span id="lbCode">-</span></small></div>
-        <button class="btn3 sky sm" id="btnChar">캐릭터 바꾸기</button></div>
+      <div class="logoTxt"><b>K-Culture</b><span>마스터 | 학생용</span></div>
+      <div class="hBox lbTitleBox"><b id="lbTitle">대기 중입니다</b><small id="lbSub">선생님의 팀 배정을 기다려요</small></div>
+      <div class="hBox lbMe"><img id="lbAv" class="ava"><div><b id="lbName">-</b><small>방 코드 <span id="lbCode">-</span></small></div>
+        <button class="nbtn sky sm" id="btnChar">캐릭터 바꾸기</button></div>
     </div>
     <div class="lbBody">
-      <div class="pop lbMain"><div class="popHead" id="lbHead">팀 배정을 기다려요</div><div class="popBody" id="lbMain"></div></div>
-      <div class="pop lbPrac">
-        <div class="popHead">기다리는 동안 연습해요! <span id="pracScore">0 / 0</span></div>
-        <div class="popBody pracBody">
+      <div class="npop lbMain"><div class="nHead" id="lbHead">팀 배정을 기다려요</div><div class="nBody" id="lbMain"></div></div>
+      <div class="npop lbPrac">
+        <div class="nHead">기다리는 동안 연습해요! <span id="pracScore">0 / 0</span></div>
+        <div class="nBody pracBody">
           <div class="pracImg"><img id="pracImg" alt=""></div>
           <div class="pracR">
-            <div class="pracQ">What is this?</div>
+            <div class="pracQ">Q. What is this?</div>
             <div class="pracCh" id="pracCh"></div>
-            <div class="pracFoot"><span id="pracMsg"></span><button class="btn3 blue sm" id="pracNext">다음 문제 ▶</button></div>
+            <div class="pracFoot"><span id="pracMsg"></span><button class="nbtn blue sm" id="pracNext">다음 문제 ▶</button></div>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 5. 게임 -->
+  <!-- 5. 게임 (시안: 학생용 메인 보드) -->
   <section class="scr" id="sGame">
-    <img src="img/v2/logo.webp" class="gLogo" alt="K-Culture 마스터">
-    <div class="gIcons">
-      <div class="gInfo"><span>목표 <b id="gTarget">12</b>점</span><span class="tm"><img src="img/ic_hourglass.webp"><b id="gTime">--:--</b></span></div>
-      <button class="ib ic" id="btnSfx"><img src="img/v2/ic_sound.webp" alt="효과음"></button>
-      <button class="ib ic" id="btnBgm"><img src="img/v2/ic_music.webp" alt="배경음악"></button>
-      <button class="ib ic" data-open="rules"><img src="img/v2/ic_help.webp" alt="도움말"></button>
-      <button class="ib ic" data-open="gear"><img src="img/v2/ic_gear.webp" alt="설정"></button>
+    <div class="hBox gLogo"><div class="logoTxt"><b>K-Culture</b><span>마스터 | 학생용</span></div></div>
+    <div class="hBox gMarketT"><b>전통문화 카드 시장</b><small id="gMarketSub">1·2·3단계 각 4장 | 15점 달성 시 마지막 라운드</small></div>
+    <div class="hBox gBonusT"><b>보너스 카드 5종 (조건 달성 시 +3점)</b></div>
+    <div class="hBox gTurnT"><b id="gTurnWho">현재 차례 -</b><small id="gTurnSub">목표 15점</small><div class="tbar"><i id="gTurnBar"></i></div></div>
+    <div class="gLeft">
+      <div class="gClock" id="gClock"><span>남은 시간</span><b id="gTime">--:--</b></div>
+      <div class="gBtns"><button class="tbtn" id="btnSfx" title="효과음">🔊</button><button class="tbtn" data-open="rules" title="게임 방법">❓</button><button class="tbtn" data-open="gear" title="설정">⚙</button></div>
     </div>
-    <div class="bonusBox"><div class="boxTitle">보너스 카드</div><div class="bonusRow" id="gNobles"></div></div>
-    <div class="bank" id="gBank"></div>
+    <div class="gMyTurn" id="gMyTurn"></div>
+    <div class="gLog" id="gLog"></div>
+    <div class="bonusRow" id="gNobles"></div>
+    <div class="hBox bank" id="gBank"></div>
     <div class="tiers" id="gTiers"></div>
     <div class="opp" id="opp0"></div><div class="opp" id="opp1"></div><div class="opp" id="opp2"></div><div class="opp" id="opp3"></div>
-    <div class="mine" id="gMine"></div>
-    <div class="acts">
-      <div class="turnLine"><span id="gTurnWho">-</span><div class="tbar"><i id="gTurnBar"></i></div></div>
-      <div class="actGrid">
-        <button class="ib ab" id="btnTake" data-k="take"><img alt="자원 가져오기"></button>
-        <button class="ib ab" id="btnBuyMode" data-k="buy"><img alt="카드 구매하기"></button>
-        <button class="ib ab" id="btnResMode" data-k="reserve"><img alt="카드 예약하기"></button>
-        <button class="ib ab" id="btnEnd" data-k="end"><img alt="턴 종료하기"></button>
+    <div class="hBox mine" id="gMine">
+      <div class="meBox" id="mMe"></div>
+      <div class="mSec mBought"><div class="h">내가 구매한 카드 · 영구 할인</div><div class="row" id="mCards"></div><div class="disc" id="mDisc"></div></div>
+      <div class="mSec mRsv"><div class="h">내 예약 카드 (최대 3장)</div><div class="row" id="mRsv"></div></div>
+      <div class="acts">
+        <div class="actGrid">
+          <button class="ib ab" id="btnTake" data-k="take"><img alt="자원 가져오기"></button>
+          <button class="ib ab" id="btnBuyMode" data-k="buy"><img alt="카드 구매하기"></button>
+          <button class="ib ab" id="btnResMode" data-k="reserve"><img alt="카드 예약하기"></button>
+          <button class="ib ab" id="btnEnd" data-k="end"><img alt="턴 종료하기"></button>
+        </div>
+        <div class="actTip" id="actTip"></div>
       </div>
     </div>
     <div class="modeTip" id="modeTip"></div>
@@ -111,142 +115,150 @@
 
   <!-- 6. 게임 결과 -->
   <section class="scr" id="sEnd">
-    <div class="pop solo endPop">
-      <div class="popHead">👑 게임이 종료되었습니다!</div>
-      <div class="popBody">
-        <div class="podium" id="podium"></div>
-        <div class="endList" id="endList"></div>
-        <div class="rowc"><button class="btn3 blue" id="btnHome">처음으로</button><button class="btn3 red" id="btnAgain">다시 하기</button></div>
+    <div class="endWrap">
+      <div class="endL">
+        <img src="img/n/ui/gameover.webp" class="goImg" alt="게임 종료! 게임이 종료되었습니다!">
+        <div class="tieBox" id="tieBox"><img src="img/n/ui/tie_top.webp" alt="동점 처리"><span>점수가 같으면 카드가 적은 사람 → 정답이 많은 사람이 앞서요!</span></div>
+        <div class="rowc col">
+          <button class="ib" id="btnAgain"><img src="img/n/btn/start_n.webp" alt="게임 시작"></button>
+          <button class="nbtn gray" id="btnHome">처음 화면으로</button>
+        </div>
       </div>
+      <div class="rankBoard"><img src="img/n/ui/ranking.webp" alt="최종 순위"><div class="rkRows" id="rkRows"></div></div>
+      <div class="npop endR"><div class="nHead">모은 카드 살펴보기</div><div class="nBody" id="endList"></div></div>
     </div>
   </section>
 
-  <!-- 팝업 -->
-  <div class="layer" id="mRules">
-    <div class="pop helpPop">
-      <div class="popHead">게임 도움말</div><button class="xBtn" data-close><img src="img/v2/ic_no.webp" alt="닫기"></button>
-      <div class="popBody">
-        <div class="tabs" id="helpTabs"><button class="on" data-t="h1">기본 규칙</button><button data-t="h2">카드 설명</button><button data-t="h3">승리 조건</button></div>
-        <div class="helpPane on" id="h1">
-          <div class="hRow"><b>1</b><div><h4>자원 가져오기</h4><p>자원 1종류를 고르면 그 종류의 영어 문제가 나와요. 맞히면 그 자원 2개!</p></div><img src="img/v2/tok_food.webp"></div>
-          <div class="hRow"><b>2</b><div><h4>카드 구매하기</h4><p>필요한 자원을 내고 시장의 카드를 사요. 한 차례에 1장!</p></div><img src="img/v2/th_hanbok.webp" class="cardTh"></div>
-          <div class="hRow"><b>3</b><div><h4>카드 예약하기</h4><p>사고 싶은 카드를 먼저 찜하고 왕관(만능 자원) 1개를 받아요. 최대 3장!</p></div><img src="img/v2/tok_wild.webp"></div>
-          <div class="hRow"><b>4</b><div><h4>턴 종료하기</h4><p>①자원 받기나 예약 중 하나 + ②카드 1장 사기를 한 뒤 차례를 넘겨요.</p></div><img src="img/v2/ic_next.webp"></div>
-        </div>
-        <div class="helpPane" id="h2">
-          <div class="hRow"><b>★</b><div><h4>카드 점수</h4><p>카드 왼쪽 위 숫자가 점수예요. 1단계 1점 · 2단계 2점 · 3단계 3점</p></div></div>
-          <div class="hRow"><b>－</b><div><h4>영구 할인</h4><p>산 카드 1장 = 같은 종류 자원을 1개 덜 내요. (의복 카드 → 의복 비용 -1)</p></div></div>
-          <div class="hRow"><b>♛</b><div><h4>보너스 카드</h4><p>조건을 먼저 채우면 왕 +4 · 왕비 +4 · 학자 +3 · 예술가 +3 · 여행가 +3</p></div></div>
-          <div class="hRow"><b>💡</b><div><h4>힌트</h4><p>문제가 어려우면 힌트로 틀린 보기 2개를 지워요. 3문제 연속 정답이면 왕관 +1!</p></div></div>
-        </div>
-        <div class="helpPane" id="h3">
-          <div class="hRow"><b>🏆</b><div><h4>목표 점수 달성</h4><p>누군가 목표 점수에 닿으면 그 라운드까지만 하고 끝나요.</p></div></div>
-          <div class="hRow"><b>⏳</b><div><h4>시간 종료</h4><p>남은 시간이 0이 되면 바로 끝나요.</p></div></div>
-          <div class="hRow"><b>1</b><div><h4>1등은?</h4><p>점수가 가장 높은 사람! 같으면 카드가 적은 사람 → 정답이 많은 사람.</p></div></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="layer" id="mGear">
-    <div class="pop gearPop">
-      <div class="popHead">⚙ 설정</div><button class="xBtn" data-close><img src="img/v2/ic_no.webp" alt="닫기"></button>
-      <div class="popBody">
-        <div class="gRow"><span>효과음</span><img src="img/v2/ic_sound.webp"><input type="range" id="vSfx" min="0" max="100"><label class="sw"><input type="checkbox" id="tSfx"><i></i></label></div>
-        <div class="gRow"><span>배경음악</span><img src="img/v2/ic_music.webp"><input type="range" id="vBgm" min="0" max="100"><label class="sw"><input type="checkbox" id="tBgm"><i></i></label></div>
-        <div class="gRow"><span>화면 모드</span><button class="btn3 gray sm" id="fsOff">창 모드</button><button class="btn3 blue sm" id="fsOn">전체 화면</button></div>
-        <div class="rowc"><button class="btn3 sky" data-open="book">📖 전통문화 도감</button></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="layer" id="mBook">
-    <div class="pop bookPop">
-      <div class="popHead">전통문화 도감</div><button class="xBtn" data-close><img src="img/v2/ic_no.webp" alt="닫기"></button>
-      <div class="popBody"><div class="tabs" id="bookTabs"></div><div class="bookList" id="bookList"></div></div>
-    </div>
-  </div>
-
+  <!-- ===== 팝업 ===== -->
+  <!-- 자원 가져오기 (프레임: 자원 선택 팝업) -->
   <div class="layer" id="mTake">
-    <div class="pop takePop">
-      <div class="popHead">가져올 자원을 선택하세요!</div><button class="xBtn" data-close><img src="img/v2/ic_no.webp" alt="닫기"></button>
-      <div class="popBody">
-        <p class="sub">자원 1종류를 고르면 그 종류의 영어 문제가 나와요. 맞히면 <b>2개</b>!</p>
-        <div class="takeList" id="takeList"></div>
-        <div class="takeFoot"><span>💡 선택한 자원: <b id="takeSel">없음</b></span><button class="ib" id="takeOk" disabled><img src="img/v2/b_ok.webp" alt="확인"></button></div>
+    <div class="fpop"><img class="frm" src="img/n/frame/take.webp" alt=""><div class="fTitle" style="--fc:#23bf6f">자원 가져오기</div><button class="fx" data-close aria-label="닫기"></button>
+      <div class="fBody">
+        <p class="fSub">서로 다른 자원 3개 또는 같은 종류의 자원 2개를 선택하세요.</p>
+        <div class="tabs2"><button id="tkModeA" class="on">서로 다른 자원 3개</button><button id="tkModeB">같은 자원 2개</button></div>
+        <div class="takeBox"><div class="takeList" id="takeList"></div><div class="takeSel" id="takeSel">선택한 자원 0 / 3</div><div class="retBox" id="retBox"></div></div>
+        <div class="fFoot"><span class="note" id="takeNote"></span><button class="ib" id="takeOk" disabled><img src="img/n/btn/take_n.webp" alt="자원 가져오기"></button></div>
       </div>
     </div>
   </div>
 
-  <div class="layer" id="mCard">
-    <div class="pop cardPop">
-      <div class="popHead" id="cdHead">카드 자세히 보기</div><button class="xBtn" data-close><img src="img/v2/ic_no.webp" alt="닫기"></button>
-      <div class="popBody cdBody">
-        <div class="cdL" id="cdCard"></div>
-        <div class="cdR">
-          <div class="cdTop"><b id="cdName"></b><span class="tag" id="cdCat"></span><span class="star">⭐ <b id="cdPts"></b>점</span></div>
-          <div class="cdDesc" id="cdDesc"></div>
-          <div class="cdSec"><span class="lbl">필요한 자원</span><div class="tkRow" id="cdCost"></div></div>
-          <div class="cdSec pay"><span class="lbl">실제 지불할 자원 (할인 적용 후)</span><div class="tkRow" id="cdNeed"></div></div>
-          <div class="cdSec"><span class="lbl">내가 가진 자원</span><div class="tkRow sm" id="cdHave"></div></div>
-          <div class="cdBonus" id="cdBonus"></div>
-          <label class="chk" id="cdGold"><input type="checkbox" checked disabled> 예약하면 황금 왕관 자원 1개 가져오기</label>
-          <div class="cdMsg" id="cdMsg"></div>
-          <div class="rowc">
-            <button class="btn3 red" data-close>취소</button>
-            <button class="btn3 blue" id="btnBuy">구매하기</button>
-            <button class="btn3 yellow" id="btnReserve">예약하기</button>
+  <!-- 영어 문제 (프레임: 영어 문제 팝업) -->
+  <div class="layer" id="mQ">
+    <div class="fpop qPop"><img class="frm" src="img/n/frame/quiz.webp" alt=""><div class="fTitle" style="--fc:#1a83ef">영어 문제 풀기</div>
+      <div class="fBody">
+        <p class="fSub">Lesson 11 · Do You Know About Songpyeon? <span class="qWho" id="qWho"></span></p>
+        <div class="qBox">
+          <div class="qImg" id="qImg"></div>
+          <div class="qR">
+            <div class="qTop"><button class="spk" id="btnSpeak" title="듣기">🔊</button><div class="qText" id="qText"></div></div>
+            <div class="qKo" id="qKo"></div>
+            <div class="qChoices" id="qChoices"></div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="layer" id="mPlayer">
-    <div class="pop plPop">
-      <div class="popHead" id="ppHead">친구 정보</div><button class="xBtn" data-close><img src="img/v2/ic_no.webp" alt="닫기"></button>
-      <div class="popBody">
-        <div class="ppTop"><img class="ava big" id="ppAv"><div class="ppName"><b id="ppName"></b><small id="ppSub"></small></div><div class="ppScore">점수 <b id="ppScore"></b></div></div>
-        <div class="ppRow">
-          <div class="box"><span class="lbl">보유 자원</span><div class="tkRow" id="ppTok"></div></div>
-          <div class="box"><span class="lbl">영구 할인 (모은 카드)</span><div class="discRow" id="ppDisc"></div></div>
-          <div class="box"><span class="lbl">보너스 카드</span><div class="ppNob" id="ppNob"></div></div>
-        </div>
-        <span class="lbl">구매한 카드</span><div class="ppCards" id="ppCards"></div>
-        <span class="lbl">예약 카드</span><div class="ppCards" id="ppRsv"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="layer" id="mQ">
-    <div class="pop qPop">
-      <div class="popHead">문제를 풀어보세요!</div>
-      <div class="popBody">
-        <div class="qTop">
-          <button class="ib spk" id="btnSpeak"><img src="img/v2/ic_sound.webp" alt="듣기"></button>
-          <div class="qText" id="qText"></div>
-          <span class="qCat" id="qCat"></span>
-        </div>
-        <div class="qKo" id="qKo"></div>
-        <div class="qMid">
-          <div class="qImg" id="qImg"></div>
-          <div class="qChoices" id="qChoices"></div>
-        </div>
-        <div class="qFoot">
-          <span class="qWho" id="qWho"></span>
-          <span class="qLeft">남은 시간 <b id="qSec">25</b>초</span>
-          <div class="qtbar"><i id="qBar"></i></div>
-          <button class="ib hintB" id="btnHint"><img src="img/v2/btn_hint.webp" alt="힌트 사용"><b id="hintN">2</b></button>
+        <div class="fFoot qFoot">
+          <div class="qInfo"><span class="qPick" id="qPick"></span><span class="qLeft">⏰ <b id="qSec">25</b>초</span><div class="qtbar"><i id="qBar"></i></div></div>
+          <button class="nbtn purple sm" id="btnHint">💡 힌트 <b id="hintN">2</b></button>
+          <button class="ib" id="qOk" disabled><img src="img/n/btn/ok_n.webp" alt="정답 확인"></button>
         </div>
       </div>
       <div class="qRes" id="qRes"></div>
     </div>
   </div>
 
+  <!-- 카드 보기 · 구매 · 예약 (프레임 3종) -->
+  <div class="layer" id="mCard">
+    <div class="fpop cardPop"><img class="frm" id="cdFrame" src="img/n/frame/buy.webp" alt=""><div class="fTitle" id="cdTitle" style="--fc:#1a83ef">카드 구매하기</div><button class="fx" data-close aria-label="닫기"></button>
+      <div class="fBody cdBody">
+        <div class="cdL"><img id="cdImg" alt=""></div>
+        <div class="cdR">
+          <div class="cdTop"><b id="cdName"></b><span id="cdMeta"></span></div>
+          <div class="cdMain" id="cdMain"></div>
+          <div class="cdMsg" id="cdMsg"></div>
+          <div class="cdBtns">
+            <button class="ib" data-close><img src="img/n/btn/cancel_n.webp" alt="취소"></button>
+            <button class="ib" id="btnBuy"><img src="img/n/btn/buy_n.webp" alt="카드 구매하기"></button>
+            <button class="ib" id="btnReserve"><img src="img/n/btn/reserve_n.webp" alt="카드 예약하기"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 다른 학생 상세 정보 -->
+  <div class="layer" id="mPlayer">
+    <div class="npop plPop">
+      <div class="nHead" id="ppHead">다른 학생 상세 정보</div><button class="xB" data-close aria-label="닫기">×</button>
+      <div class="nBody">
+        <div class="ppTop"><img class="ava big" id="ppAv"><div class="ppName"><b id="ppName"></b><small id="ppSub"></small></div><div class="ppScore"><img src="img/n/ui/pt1.webp" alt=""><b id="ppScore"></b>점</div></div>
+        <div class="ppSecT">보유 자원 토큰 (공개)</div><div class="ppBox ppTok" id="ppTok"></div>
+        <div class="ppSecT">구매한 카드 · 영구 할인 (공개)</div><div class="ppBox ppCards" id="ppCards"></div>
+        <div class="ppDisc" id="ppDisc"></div>
+        <div class="ppSecT">예약 카드 · 보너스 카드</div><div class="ppBox ppCards" id="ppRsv"></div>
+        <div class="rowc"><button class="ib" data-close><img src="img/n/btn/ok_n.webp" alt="확인"></button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 이번 차례의 행동 완료 -->
+  <div class="layer clear" id="mDone">
+    <div class="npop donePop">
+      <div class="nHead">이번 차례의 행동 완료</div>
+      <div class="nBody"><b id="doneMsg">행동을 마쳤어요.</b><small id="doneSub">차례를 넘기면 다음 학생이 시작해요.</small>
+        <div class="rowc" style="margin-top:0"><button class="nbtn green" id="doneBuy">🛒 카드 사러 가기</button><button class="nbtn blue" id="doneNext">다음 학생 차례 ▶</button></div></div>
+    </div>
+  </div>
+
+  <!-- 게임 방법 -->
+  <div class="layer" id="mRules">
+    <div class="npop helpPop">
+      <div class="nHead">게임 방법</div><button class="xB" data-close aria-label="닫기">×</button>
+      <div class="nBody">
+        <div class="tabs2" id="helpTabs"><button class="on" data-t="h1">내 차례에 할 일</button><button data-t="h2">카드 읽는 법</button><button data-t="h3">승리 조건</button></div>
+        <div class="helpPane on" id="h1">
+          <div class="hRow"><b>1</b><div><h4>자원 가져오기 → 영어 문제</h4><p>서로 다른 자원 3개 또는 같은 자원 2개를 골라요. 영어 문제를 맞히면 고른 자원을 받아요!</p></div><span class="tkRow"><i class="tk food">음</i><i class="tk clothing">의</i><i class="tk play">놀</i></span></div>
+          <div class="hRow"><b>2</b><div><h4>카드 구매하기</h4><p>카드 비용만큼 자원을 내고 카드를 사요. 산 카드는 같은 종류 비용을 1개씩 깎아 줘요(영구 할인).</p></div><img src="img/n/ph/hanbok.webp" class="hTh"></div>
+          <div class="hRow"><b>3</b><div><h4>카드 예약하기</h4><p>사고 싶은 카드를 찜해 두고 황금 1개를 받아요. 예약 카드는 최대 3장!</p></div><span class="tkRow"><i class="tk wild">황</i></span></div>
+          <div class="hRow"><b>!</b><div><h4>빠른 진행 규칙</h4><p>맞히면 고른 자원을 <b>2배</b>로 받아요! 자원 가져오기나 예약을 한 뒤에도 같은 차례에 카드 1장을 살 수 있어요. 자원은 10개까지.</p></div></div>
+        </div>
+        <div class="helpPane" id="h2">
+          <div class="hRow"><b>★</b><div><h4>점수</h4><p>카드 왼쪽 위 숫자가 점수예요. 1단계 0~1점 · 2단계 1~2점 · 3단계 3~4점</p></div><img src="img/n/card/kimchi.webp" class="hCard"></div>
+          <div class="hRow"><b>－</b><div><h4>영구 할인</h4><p>의복 카드 1장 = 앞으로 의복 비용 1개 덜 내기. 카드를 모을수록 싸져요!</p></div></div>
+          <div class="hRow"><b>♛</b><div><h4>보너스 카드 (+3점)</h4><p>구매한 카드가 정해진 3종류로 3장씩 모이면 차례가 끝날 때 보너스 카드를 받아요.</p></div><img src="img/n/bonus/king.webp" class="hCard"></div>
+          <div class="hRow"><b>💡</b><div><h4>힌트</h4><p>문제가 어려우면 힌트로 틀린 보기 2개를 지워요.</p></div></div>
+        </div>
+        <div class="helpPane" id="h3">
+          <div class="hRow"><b>🏆</b><div><h4>목표 점수 달성</h4><p>누군가 목표 점수에 닿으면 그 라운드까지만 하고 끝나요.</p></div><img src="img/n/ui/target.webp" class="hTh2"></div>
+          <div class="hRow"><b>⏳</b><div><h4>시간 종료</h4><p>남은 시간이 0이 되면 바로 끝나요.</p></div></div>
+          <div class="hRow"><b>⚖</b><div><h4>동점이면?</h4><p>점수가 같으면 카드가 적은 사람 → 정답이 많은 사람이 앞서요.</p></div><img src="img/n/ui/tie_top.webp" class="hTh2"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="layer" id="mGear">
+    <div class="npop gearPop">
+      <div class="nHead">⚙ 설정</div><button class="xB" data-close aria-label="닫기">×</button>
+      <div class="nBody">
+        <div class="gRow"><span>효과음</span><input type="range" id="vSfx" min="0" max="100"><label class="sw"><input type="checkbox" id="tSfx"><i></i></label></div>
+        <div class="gRow"><span>배경음악</span><input type="range" id="vBgm" min="0" max="100"><label class="sw"><input type="checkbox" id="tBgm"><i></i></label></div>
+        <div class="gRow"><span>화면 모드</span><button class="nbtn gray sm" id="fsOff">창 모드</button><button class="nbtn blue sm" id="fsOn">전체 화면</button></div>
+        <div class="rowc"><button class="nbtn sky" data-open="book">📚 전통문화 카드 도감</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="layer" id="mBook">
+    <div class="npop bookPop">
+      <div class="nHead">전통문화 카드 도감</div><button class="xB" data-close aria-label="닫기">×</button>
+      <div class="nBody"><div class="tabs2" id="bookTabs"></div><div class="bookList" id="bookList"></div></div>
+    </div>
+  </div>
+
   <div class="fxLayer" id="fx"></div>
   <div class="bubble" id="toast"></div>
-  <div class="cover" id="pause"><button class="ib" id="pauseOk"><img src="img/v2/pop_pause.webp" alt="게임이 일시 정지되었습니다"></button></div>
-  <div class="cover" id="offline"><img src="img/v2/pop_offline.webp" alt="연결이 끊겼어요"></div>
+  <div class="tmsg" id="tmsg"><img src="img/n/t/teacher.webp" alt=""><div><small>선생님 메시지</small><b id="tmsgText"></b></div></div>
+  <div class="cover" id="pause"><div class="fpop"><img class="frm" src="img/n/frame/pause.webp" alt="게임 일시 정지"><div class="fBody pauseBody"><b>선생님이 게임을 잠시 멈췄어요.</b><span>타이머도 함께 멈춰요. 다시 시작하면 이어서 해요!</span><button class="ib" id="pauseOk"><img src="img/n/btn/ok_n.webp" alt="확인"></button></div></div></div>
+  <div class="cover" id="offline"><div class="offBox"><img src="img/n/ui/reconnect.webp" alt="재접속 안내"><span>연결이 끊겼어요. 자동으로 다시 연결하는 중…</span></div></div>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>

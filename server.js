@@ -42,7 +42,8 @@ function cleanQuestion(q) {
 
 /* ---------------- 상태 ---------------- */
 const classes = new Map(); // code -> cls
-const DEFAULT_SETTINGS = { teamSize: 4, timeLimit: 15, target: 12, turnTime: 60, qTime: 25, allowRooms: true, hostStart: true, hints: 2 };
+// fast: 수업용 빠른 진행 — 정답이면 고른 자원 ×mult, 자원·예약 뒤에 같은 차례에 카드 1장 더 살 수 있음
+const DEFAULT_SETTINGS = { teamSize: 5, timeLimit: 10, target: 5, turnTime: 60, qTime: 25, allowRooms: true, hostStart: true, hints: 2, fast: true, mult: 2 };
 const rid = () => Math.random().toString(36).slice(2, 10);
 const now = () => Date.now();
 const shuffle = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = (Math.random() * (i + 1)) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
@@ -88,14 +89,15 @@ function splitSizes(n, size) {
 }
 
 /* ---------------- 게임 ---------------- */
-function bankFor(n) { return n <= 2 ? 6 : n === 3 ? 7 : n === 4 ? 8 : 9; }
+// 규칙표: 일반 자원 5종 × 7개, 황금 5개 (2명 4개 · 3명 5개로 줄임)
+function bankFor(n) { return n <= 2 ? 4 : n === 3 ? 5 : 7; }
 function startGame(cls, room) {
   if (room.status !== 'lobby' || !room.players.length) return false;
   const order = shuffle(room.players);
   const decks = { 1: [], 2: [], 3: [] };
-  shuffle(Object.keys(KC.CARDS)).forEach((id) => decks[KC.tierOf(id)].push(id));
+  shuffle(Object.keys(KC.CARDS).flatMap((id) => Array(KC.COPIES).fill(id))).forEach((id) => decks[KC.tierOf(id)].push(id));
   const tiers = {};
-  [1, 2, 3].forEach((t) => { tiers[t] = decks[t].splice(0, 4); while (tiers[t].length < 4) tiers[t].push(null); });
+  [1, 2, 3].forEach((t) => { tiers[t] = []; for (let i = 0; i < 4; i++) tiers[t].push(drawCard(decks[t], tiers[t])); });
   const per = bankFor(order.length);
   const bank = { food: per, clothing: per, play: per, craft: per, heritage: per, wild: 5 };
   const ps = {};
@@ -104,7 +106,7 @@ function startGame(cls, room) {
   room.game = {
     order, turnIdx: 0, bank, tiers, decks, nobles: { king: null, queen: null, scholar: null, artist: null, traveler: null },
     ps, startAt: t, endAt: t + cls.settings.timeLimit * 60000, target: cls.settings.target, finalRound: false, finalBy: null,
-    usedQ: {}, lastAnsPos: -1, log: [], ended: false, ranking: null, turn: null, round: 1, seq: 0,
+    usedQ: {}, lastAnsPos: -1, log: [], ended: false, ranking: null, turn: null, round: 1, seq: 0, qstats: {},
   };
   room.status = 'playing';
   addLog(room, `게임 시작! 목표 ${cls.settings.target}점`);
@@ -119,7 +121,7 @@ function addLog(room, msg, type = 'info') {
 const nameOf = (cls, id) => (cls.students.get(id) || {}).name || '?';
 function beginTurn(cls, room) {
   const g = room.game; const pid = g.order[g.turnIdx];
-  g.turn = { pid, action: false, bought: false, q: null, deadline: now() + cls.settings.turnTime * 1000, startedAt: now() };
+  g.turn = { pid, done: false, bought: false, act: null, q: null, deadline: now() + cls.settings.turnTime * 1000, startedAt: now() };
   g.seq++;
   g.ps[pid].turns++;
 }
@@ -129,7 +131,8 @@ function nextTurn(cls, room) {
   if (pid) checkNobles(cls, room, pid);
   if (g.ps[pid] && g.ps[pid].score >= g.target && !g.finalRound) {
     g.finalRound = true; g.finalBy = pid;
-    addLog(room, `${nameOf(cls, pid)} 학생이 목표 점수 달성! 이번 바퀴가 마지막이에요.`, 'gold');
+    addLog(room, `${nameOf(cls, pid)} 학생이 ${g.target}점 달성! 이번 바퀴가 마지막이에요.`, 'gold');
+    emitRoom(cls, room, 'fx', { type: 'target', pid, target: g.target });
   }
   g.turnIdx = (g.turnIdx + 1) % g.order.length;
   if (g.turnIdx === 0) {
@@ -141,7 +144,7 @@ function nextTurn(cls, room) {
 function checkNobles(cls, room, pid) {
   const g = room.game; const p = g.ps[pid]; const got = [];
   Object.keys(g.nobles).forEach((nid) => {
-    if (!g.nobles[nid] && KC.nobleOk(nid, p.cards)) {
+    if (!got.length && !g.nobles[nid] && KC.nobleOk(nid, p.cards)) {
       g.nobles[nid] = pid; p.nobles.push(nid); p.score += KC.NOBLES[nid].pts; got.push(nid);
       addLog(room, `${nameOf(cls, pid)} 학생이 ${KC.NOBLES[nid].name} 카드(+${KC.NOBLES[nid].pts}점)를 받았어요!`, 'gold');
     }
@@ -151,12 +154,13 @@ function checkNobles(cls, room, pid) {
 function endGame(cls, room, reason) {
   const g = room.game; if (!g || g.ended) return;
   g.ended = true; g.turn = null; room.status = 'ended';
-  const rank = g.order.map((pid) => ({ pid, name: nameOf(cls, pid), char: (cls.students.get(pid) || {}).char, score: g.ps[pid].score, cards: g.ps[pid].cards.length, correct: g.ps[pid].correct, attempts: g.ps[pid].attempts, nobles: g.ps[pid].nobles.slice() }))
+  const rank = g.order.map((pid) => ({ pid, name: nameOf(cls, pid), char: (cls.students.get(pid) || {}).char, score: g.ps[pid].score, cards: g.ps[pid].cards.length, cardList: g.ps[pid].cards.slice(), tokens: { ...g.ps[pid].tokens }, correct: g.ps[pid].correct, attempts: g.ps[pid].attempts, nobles: g.ps[pid].nobles.slice() }))
     .sort((a, b) => b.score - a.score || a.cards - b.cards || b.correct - a.correct);
   rank.forEach((r, i) => { r.rank = i > 0 && rank[i - 1].score === r.score && rank[i - 1].cards === r.cards && rank[i - 1].correct === r.correct ? rank[i - 1].rank : i + 1; });
+  g.tie = rank.length > 1 && rank[0].score === rank[1].score; // 점수가 같아 카드 수·정답 수로 정했는지
   g.ranking = rank; g.reason = reason; g.endedAt = now();
   addLog(room, reason === 'target' ? '게임 끝! 목표 점수에 도달했어요.' : reason === 'time' ? '게임 끝! 시간이 다 되었어요.' : '선생님이 게임을 마쳤어요.', 'gold');
-  cls.history.push({ gameNo: cls.gameNo, room: `${room.name} ${room.title}`, roomNum: room.num, endedAt: g.endedAt, reason, ranking: rank, durationSec: Math.round((g.endedAt - g.startAt) / 1000) });
+  cls.history.push({ gameNo: cls.gameNo, room: `${room.name} ${room.title}`, roomNum: room.num, endedAt: g.endedAt, reason, ranking: rank, qstats: g.qstats, durationSec: Math.round((g.endedAt - g.startAt) / 1000) });
   emitRoom(cls, room, 'fx', { type: 'end' });
 }
 function pickQuestion(cls, room, cat) {
@@ -183,9 +187,15 @@ function giveTokens(g, p, kind, want) {
 
 const marketFlat = (g) => [1, 2, 3].flatMap((t) => g.tiers[t]).filter(Boolean);
 const inMarket = (g, id) => marketFlat(g).includes(id);
+// 더미에서 1장 — 같은 카드가 시장에 두 장 나란히 보이지 않게 (같은 종류는 2장씩 있어요)
+function drawCard(deck, shown) {
+  if (!deck.length) return null;
+  let i = deck.findIndex((id) => !shown.includes(id)); if (i < 0) i = 0;
+  return deck.splice(i, 1)[0];
+}
 function takeFromMarket(g, id) {
   const t = KC.tierOf(id); const i = g.tiers[t].indexOf(id);
-  if (i >= 0) g.tiers[t][i] = g.decks[t].length ? g.decks[t].shift() : null;
+  if (i >= 0) { g.tiers[t][i] = null; g.tiers[t][i] = drawCard(g.decks[t], g.tiers[t]); }
 }
 function handleAction(cls, st, a) {
   const room = roomOf(cls, st); if (!room || !room.game || room.status !== 'playing') return { err: '게임 중이 아니에요.' };
@@ -193,18 +203,20 @@ function handleAction(cls, st, a) {
   const g = room.game; const t = g.turn; if (!t) return { err: '차례가 아니에요.' };
   if (t.pid !== st.id) return { err: '내 차례가 아니에요.' };
   const p = g.ps[st.id];
+  const held = () => Object.values(p.tokens).reduce((x, y) => x + y, 0);
+  const oneAction = () => (t.done ? '이번 차례에는 이미 행동했어요. 차례를 넘겨 주세요.' : t.q ? '문제를 푸는 중이에요.' : null);
   switch (a.type) {
-    case 'take': { // 자원 고르기 → 문제
-      if (t.action) return { err: '이번 차례에는 이미 자원을 받았어요.' };
-      if (t.q) return { err: '문제를 푸는 중이에요.' };
-      if (!KC.CATS.includes(a.cat)) return { err: '자원을 골라 주세요.' };
-      if (g.bank[a.cat] <= 0) return { err: '그 자원은 다 떨어졌어요.' };
-      const tot = Object.values(p.tokens).reduce((x, y) => x + y, 0);
-      if (tot >= 10) return { err: '자원은 10개까지만 가질 수 있어요. 카드를 먼저 사 보세요.' };
-      const q = pickQuestion(cls, room, a.cat); if (!q) return { err: '문제가 없어요. 선생님께 알려 주세요.' };
-      t.q = { ...q, deadline: now() + cls.settings.qTime * 1000, startedAt: now(), picked: null };
+    case 'take': { // 자원 고르기(서로 다른 3개 / 같은 2개) → 영어 문제
+      const busy = oneAction(); if (busy) return { err: busy };
+      const pick = {}; KC.CATS.forEach((k) => { const v = Math.floor(+((a.pick || {})[k]) || 0); if (v > 0) pick[k] = v; });
+      const ret = {}; [...KC.CATS, 'wild'].forEach((k) => { const v = Math.floor(+((a.ret || {})[k]) || 0); if (v > 0) ret[k] = v; });
+      const bad = KC.takeCheck(pick, g.bank, p.tokens, ret); if (bad) return { err: bad };
+      const cats = Object.keys(pick);
+      const q = pickQuestion(cls, room, cats[(Math.random() * cats.length) | 0]); if (!q) return { err: '문제가 없어요. 선생님께 알려 주세요.' };
+      t.q = { ...q, pick, ret, deadline: now() + cls.settings.qTime * 1000, startedAt: now(), picked: null };
+      t.act = 'take';
       t.deadline = Math.max(t.deadline, t.q.deadline + 15000);
-      addLog(room, `${st.name} 학생이 ${KC.CAT_INFO[a.cat].ko} 문제에 도전해요.`);
+      addLog(room, `${st.name} 학생이 ${cats.map((k) => KC.CAT_INFO[k].ko + (pick[k] > 1 ? ' ' + pick[k] + '개' : '')).join('·')} 자원에 도전! 영어 문제 풀이 시작`);
       return { ok: true };
     }
     case 'hint': {
@@ -222,66 +234,77 @@ function handleAction(cls, st, a) {
       return { ok: true };
     }
     case 'reserve': {
-      if (t.action) return { err: '이번 차례에는 이미 자원을 받았어요.' };
-      if (t.q) return { err: '문제를 푸는 중이에요.' };
+      const busy = oneAction(); if (busy) return { err: busy };
       if (p.reserved.length >= 3) return { err: '예약은 3장까지만 할 수 있어요.' };
       if (!inMarket(g, a.card)) return { err: '시장에 없는 카드예요.' };
       p.reserved.push(a.card);
       takeFromMarket(g, a.card);
       let wild = 0;
-      if (g.bank.wild > 0 && Object.values(p.tokens).reduce((x, y) => x + y, 0) < 10) { g.bank.wild--; p.tokens.wild++; wild = 1; }
-      t.action = true;
-      addLog(room, `${st.name} 학생이 ${KC.CARDS[a.card].name} 카드를 예약했어요.${wild ? ' (특별 자원 +1)' : ''}`);
+      if (g.bank.wild > 0 && held() < 10) { g.bank.wild--; p.tokens.wild++; wild = 1; }
+      t.done = true; t.act = 'reserve';
+      addLog(room, `${st.name} 학생이 ${KC.CARDS[a.card].name} 카드를 예약했어요.${wild ? ' (황금 +1)' : ''}`, 'rsv');
       emitRoom(cls, room, 'fx', { type: 'reserve', pid: st.id, card: a.card, wild });
-      autoEnd(cls, room);
+      if (!canBuyMore(cls, g, st.id)) autoEnd(cls, room, 4500);
       return { ok: true };
     }
     case 'buy': {
-      if (t.bought) return { err: '카드는 한 차례에 한 장만 살 수 있어요.' };
       if (t.q) return { err: '문제를 먼저 풀어 주세요.' };
-      const fromRes = p.reserved.includes(a.card);
+      if (t.bought) return { err: '카드는 한 차례에 한 장만 살 수 있어요.' };
+      if (t.done && !cls.settings.fast) return { err: '이번 차례에는 이미 행동했어요. 차례를 넘겨 주세요.' };
+      const ri = p.reserved.indexOf(a.card); const fromRes = ri >= 0;
       if (!fromRes && !inMarket(g, a.card)) return { err: '살 수 없는 카드예요.' };
-      const pay = KC.payPlan(a.card, p.cards, p.tokens); if (!pay) return { err: '자원이 부족해요.' };
+      const pay = KC.payPlan(a.card, p.cards, p.tokens); if (!pay) return { err: '보유한 자원이 부족합니다.', short: KC.shortOf(a.card, p.cards, p.tokens) };
       Object.keys(pay).forEach((k) => { p.tokens[k] -= pay[k]; g.bank[k] += pay[k]; });
-      if (fromRes) p.reserved = p.reserved.filter((c) => c !== a.card);
+      if (fromRes) p.reserved.splice(ri, 1);
       else takeFromMarket(g, a.card);
-      p.cards.push(a.card); p.score += KC.CARDS[a.card].pts; t.bought = true;
-      addLog(room, `${st.name} 학생이 ${KC.CARDS[a.card].name} 카드를 샀어요! (+${KC.CARDS[a.card].pts}점)`, 'buy');
-      emitRoom(cls, room, 'fx', { type: 'buy', pid: st.id, card: a.card });
-      autoEnd(cls, room);
+      p.cards.push(a.card); p.score += KC.CARDS[a.card].pts; t.bought = true; if (!t.done) t.act = 'buy'; t.done = true;
+      addLog(room, `${st.name} 학생이 ${KC.CARDS[a.card].name} 카드 구매 완료! (+${KC.CARDS[a.card].pts}점)`, 'buy');
+      emitRoom(cls, room, 'fx', { type: 'buy', pid: st.id, card: a.card, pay });
+      autoEnd(cls, room, 4500);
       return { ok: true };
     }
     case 'end': {
       if (t.q) return { err: '문제를 먼저 풀어 주세요.' };
+      if (!t.done) addLog(room, `${st.name} 학생이 차례를 넘겼어요.`);
       nextTurn(cls, room); return { ok: true };
     }
   }
   return { err: '알 수 없는 행동' };
 }
-function autoEnd(cls, room) {
+// 빠른 진행: 행동 뒤에 살 수 있는 카드가 남아 있는지
+function canBuyMore(cls, g, pid) {
+  if (!cls.settings.fast || g.turn.bought) return false; const p = g.ps[pid];
+  return [...marketFlat(g), ...p.reserved].some((id) => KC.payPlan(id, p.cards, p.tokens));
+}
+function autoEnd(cls, room, ms) {
   const g = room.game; const t = g && g.turn;
-  if (t && t.action && t.bought && !t.q) { t.autoEndAt = now() + 2500; }
+  if (t && t.done && !t.q) { t.autoEndAt = now() + ms; }
 }
 function resolveAnswer(cls, room, pid, choice) {
   const g = room.game; const t = g.turn; const q = t.q; const p = g.ps[pid];
   q.picked = choice; p.attempts++;
   const ok = choice === q.answer;
-  let got = 0, bonus = 0;
+  const qs = (g.qstats[q.id] = g.qstats[q.id] || { text: q.text, img: q.img || null, cat: q.cat, n: 0, ok: 0 }); qs.n++; if (ok) qs.ok++;
+  const got = {}; let gotN = 0;
   if (ok) {
     p.correct++; p.streak++;
-    got = giveTokens(g, p, q.cat, 2).n;
-    if (p.streak % 3 === 0 && g.bank.wild > 0) { bonus = giveTokens(g, p, 'wild', 1).n; }
-    addLog(room, `${nameOf(cls, pid)} 정답! ${KC.CAT_INFO[q.cat].ko} 자원 ${got}개${bonus ? ' + 연속 정답 보너스 특별 자원 1개' : ''}`, 'ok');
+    Object.keys(q.ret || {}).forEach((k) => { const n = Math.min(q.ret[k], p.tokens[k]); p.tokens[k] -= n; g.bank[k] += n; });
+    Object.keys(q.pick).forEach((k) => {
+      const room10 = Math.max(0, 10 - Object.values(p.tokens).reduce((a, b) => a + b, 0));
+      const n = Math.min(q.pick[k] * (cls.settings.fast ? Math.max(1, cls.settings.mult || 1) : 1), g.bank[k], room10);
+      if (n > 0) { g.bank[k] -= n; p.tokens[k] += n; got[k] = n; gotN += n; }
+    });
+    addLog(room, `${nameOf(cls, pid)} 정답! ${Object.keys(got).map((k) => KC.CAT_INFO[k].ko + ' ' + got[k]).join(' · ')} 획득`, 'ok');
   } else {
     p.streak = 0;
-    addLog(room, `${nameOf(cls, pid)} 아쉬워요! 정답은 "${q.choices[q.answer]}"`, 'bad');
+    addLog(room, `${nameOf(cls, pid)} ${choice < 0 ? '시간 초과' : '오답'} — 정답은 "${q.choices[q.answer]}"`, 'bad');
   }
-  const result = { type: 'answer', pid, ok, picked: choice, answer: q.answer, ansText: q.choices[q.answer], cat: q.cat, got, bonus, exp: q.exp, qid: q.id };
-  t.lastQ = { ...q, ok, got, bonus };
-  t.q = null; t.action = true;
+  const result = { type: 'answer', pid, ok, picked: choice, answer: q.answer, ansText: q.choices[q.answer], cat: q.cat, got, gotN, pick: q.pick, ret: ok ? q.ret || {} : {}, exp: q.exp, qid: q.id };
+  t.lastQ = { ...q, ok, got, at: now() };
+  t.q = null; t.done = true;
   t.deadline = Math.max(t.deadline, now() + 20000);
   emitRoom(cls, room, 'fx', result);
-  autoEnd(cls, room);
+  if (!canBuyMore(cls, g, pid)) autoEnd(cls, room, 7000); else t.deadline = Math.max(t.deadline, now() + 30000);
 }
 
 /* ---------------- 상태 보내기 ---------------- */
@@ -289,11 +312,12 @@ function publicGame(cls, room, forPid, forTeacher) {
   const g = room.game; if (!g) return null;
   const t = g.turn;
   let q = null;
-  if (t && t.q) q = { cat: t.q.cat, kind: t.q.kind, text: t.q.text, ko: t.q.ko, img: t.q.img, choices: t.q.choices, deadline: t.q.deadline, startedAt: t.q.startedAt, removed: t.q.removed || null };
+  if (t && t.q) q = { cat: t.q.cat, kind: t.q.kind, text: t.q.text, ko: t.q.ko, img: t.q.img, choices: t.q.choices, pick: t.q.pick, ret: t.q.ret, deadline: t.q.deadline, startedAt: t.q.startedAt, removed: t.q.removed || null };
   return {
     order: g.order, bank: g.bank, tiers: g.tiers, market: marketFlat(g), deckCounts: { 1: g.decks[1].length, 2: g.decks[2].length, 3: g.decks[3].length }, deckCount: g.decks[1].length + g.decks[2].length + g.decks[3].length, nobles: g.nobles, target: g.target,
     startAt: g.startAt, endAt: g.endAt, finalRound: g.finalRound, round: g.round, ended: g.ended, ranking: g.ranking, seq: g.seq,
-    turn: t ? { pid: t.pid, action: t.action, bought: t.bought, deadline: t.deadline, q, lastQ: t.lastQ ? { text: t.lastQ.text, img: t.lastQ.img, choices: t.lastQ.choices, answer: t.lastQ.answer, picked: t.lastQ.picked, ok: t.lastQ.ok, exp: t.lastQ.exp, cat: t.lastQ.cat } : null } : null,
+    turn: t ? { pid: t.pid, done: t.done, bought: t.bought, act: t.act, deadline: t.deadline, startedAt: t.startedAt, q, lastQ: t.lastQ ? { text: t.lastQ.text, img: t.lastQ.img, choices: t.lastQ.choices, answer: t.lastQ.answer, picked: t.lastQ.picked, ok: t.lastQ.ok, exp: t.lastQ.exp, cat: t.lastQ.cat, got: t.lastQ.got, at: t.lastQ.at } : null } : null,
+    tie: !!g.tie, finalBy: g.finalBy, reason: g.reason || null,
     ps: Object.fromEntries(g.order.map((pid) => { const p = g.ps[pid]; const s = cls.students.get(pid) || {}; return [pid, { name: s.name, char: s.char, online: !!s.online, tokens: p.tokens, cards: p.cards, reserved: p.reserved, nobles: p.nobles, score: p.score, correct: p.correct, attempts: p.attempts, streak: p.streak, hints: p.hints }]; })),
     log: forTeacher ? g.log.slice(-40) : g.log.slice(-12),
   };
@@ -458,12 +482,14 @@ function teacherCmd(cls, m) {
       const v = m.settings || {};
       if (v.teamSize) S.teamSize = Math.max(2, Math.min(5, +v.teamSize));
       if (v.timeLimit) S.timeLimit = Math.max(3, Math.min(60, +v.timeLimit));
-      if (v.target) S.target = Math.max(5, Math.min(40, +v.target));
+      if (v.target) S.target = Math.max(3, Math.min(40, +v.target));
       if (v.turnTime) S.turnTime = Math.max(20, Math.min(180, +v.turnTime));
       if (v.qTime) S.qTime = Math.max(10, Math.min(90, +v.qTime));
       if ('allowRooms' in v) S.allowRooms = !!v.allowRooms;
       if ('hostStart' in v) S.hostStart = !!v.hostStart;
       if ('hints' in v) S.hints = Math.max(0, Math.min(5, +v.hints || 0));
+      if ('fast' in v) S.fast = !!v.fast;
+      if ('mult' in v) S.mult = Math.max(1, Math.min(3, +v.mult || 1));
       return { ok: true };
     }
     case 'autoAssign': { // 아직 팀이 없는 학생(또는 전체 대기 학생)을 팀으로 나누기
@@ -533,7 +559,19 @@ function teacherCmd(cls, m) {
       }
       return { ok: true };
     }
-    case 'extend': { const add = (+m.min || 5) * 60000; cls.rooms.forEach((r) => { if (r.game && r.status === 'playing') r.game.endAt += add; }); return { ok: true }; }
+    case 'extend': { // 게임 시간 늘리기: sec(초) 또는 min(분), id가 있으면 그 방만
+      const add = m.sec ? Math.max(10, Math.min(1800, +m.sec)) * 1000 : (+m.min || 5) * 60000; let n = 0;
+      const lbl = add >= 60000 ? add / 60000 + '분' : add / 1000 + '초';
+      cls.rooms.forEach((r) => { if (r.game && r.status === 'playing' && (!m.id || r.id === m.id)) { r.game.endAt += add; if (r.game.turn) r.game.turn.deadline += Math.min(add, 60000); n++; addLog(r, `선생님이 게임 시간을 ${lbl} 늘렸어요.`, 'gold'); emitRoom(cls, r, 'tmsg', { text: `⏰ 게임 시간이 ${lbl} 늘어났어요!` }); } });
+      return n ? { ok: true } : { err: '진행 중인 게임이 없어요.' };
+    }
+    case 'msg': { // 교사 메시지: sid(학생 1명) · id(방 전체) · 없으면 전체
+      const text = String(m.text || '').replace(/[<>]/g, '').trim().slice(0, 60); if (!text) return { err: '메시지를 입력해 주세요.' };
+      const targets = m.sid ? [m.sid] : m.id ? ((cls.rooms.get(m.id) || {}).players || []) : [...cls.students.keys()];
+      let n = 0; targets.forEach((pid) => { const s = cls.students.get(pid); if (s && s.socketId) { io.to(s.socketId).emit('tmsg', { text, from: 'teacher' }); n++; } });
+      return n ? { ok: true, sent: n } : { err: '받을 수 있는 학생이 없어요. (접속 확인)' };
+    }
+
     case 'endAll': { const want = m.id ? [cls.rooms.get(m.id)].filter(Boolean) : [...cls.rooms.values()]; want.forEach((r) => { if (r.status === 'playing') endGame(cls, r, 'teacher'); }); return { ok: true }; }
     case 'skipTurn': { const r = cls.rooms.get(m.id); if (r && r.game && r.status === 'playing' && r.game.turn) { if (r.game.turn.q) resolveAnswer(cls, r, r.game.turn.pid, -1); nextTurn(cls, r); } return { ok: true }; }
     case 'newRound': { // 끝난 게임 정리 → 모두 대기실로 (같은 팀 유지 옵션)
